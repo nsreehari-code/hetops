@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Templates — HET Skilling OS</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav>
+  <span class="site-id">hetops</span>
+  <a href="../index.html">Execution Map</a>
+  <a href="../batch-lifecycle/index.html">Batch Lifecycle</a>
+  <a href="index.html" class="active">Templates</a>
+  <a href="../checklists/index.html">Checklists</a>
+  <a href="../evidence-spines/index.html">Evidence Spines</a>
+  <a href="../adapters/index.html">Adapters</a>
+  <a href="../records/index.html">Decision Records</a>
+</nav>
+<h1>Templates</h1>
+<p class="subtitle">Reusable operational documents. The CCF execution sections (D–I) and batch runbook.</p>
+<div class="section-grid">
+  <div class="section-link" onclick="loadTpl('ccf-ops.md')" style="cursor:pointer">
+    <h4>CCF Sections D–I</h4>
+    <p>Ops half of the Course Control File</p>
+  </div>
+  <div class="section-link" onclick="loadTpl('batch-runbook.md')" style="cursor:pointer">
+    <h4>Batch Runbook</h4>
+    <p>Week-by-week operational playbook</p>
+  </div>
+</div>
+<div id="tpl-viewer" class="md-content" data-md="ccf-ops.md" style="margin-top:1.5rem;"></div>
+<footer>HET Skilling OS · <a href="../index.html">Back to Execution Map</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="../js/app.js"></script>
+<script>
+function loadTpl(file) {
+  const el = document.getElementById('tpl-viewer');
+  el.setAttribute('data-md', file);
+  renderMarkdown(el);
+}
+</script>
+</body>
+</html>

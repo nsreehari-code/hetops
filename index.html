@@ -5,88 +5,722 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>hetops — Batch Runbook</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Form */
+    .batch-form { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:2rem; }
+    .batch-form h2 { margin:0 0 1rem; font-size:1.1rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    .form-row.full { grid-template-columns:1fr; }
+    .form-group label { display:block; font-size:0.82rem; font-weight:600; color:var(--text-muted); margin-bottom:0.3rem; text-transform:uppercase; letter-spacing:0.04em; }
+    .form-group select, .form-group input { width:100%; padding:0.5rem 0.6rem; border:1px solid var(--border); border-radius:4px; font-size:0.9rem; font-family:inherit; background:var(--bg); }
+    .form-group select:focus, .form-group input:focus { outline:none; border-color:var(--accent); }
+    .funding-checks { display:flex; gap:1.25rem; flex-wrap:wrap; padding:0.25rem 0; }
+    .funding-checks label { font-size:0.9rem; font-weight:normal; text-transform:none; letter-spacing:0; display:flex; align-items:center; gap:0.35rem; cursor:pointer; }
+    .funding-checks input[type=checkbox] { margin:0; }
+    .batch-name-preview { font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem; }
+    .course-info { font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem; padding:0.5rem 0.75rem; background:var(--accent-light); border-radius:4px; }
+    .course-info span { display:inline-block; margin-right:1.25rem; }
+
+    /* Runbook */
+    #runbook { margin-top:1rem; }
+    .rb-empty { text-align:center; color:var(--text-muted); padding:3rem 1rem; font-size:0.95rem; }
+    .rb-phase { margin-bottom:2rem; }
+    .rb-phase-hdr { display:flex; align-items:baseline; gap:0.75rem; border-bottom:2px solid var(--border); padding-bottom:0.4rem; margin-bottom:0.75rem; }
+    .rb-phase-hdr h2 { margin:0; font-size:1.1rem; }
+    .rb-phase-hdr .rb-dates { font-size:0.82rem; color:var(--text-muted); }
+    .rb-phase-hdr .rb-owner { font-size:0.78rem; color:var(--stage-ops); font-weight:600; margin-left:auto; }
+    .rb-q { font-style:italic; color:var(--text-muted); font-size:0.88rem; margin-bottom:0.75rem; border-left:2px solid var(--accent); padding-left:0.75rem; }
+    .rb-section h3 { font-size:0.92rem; color:var(--text-muted); margin:0.75rem 0 0.35rem; }
+    .rb-items { list-style:none; padding:0; margin:0 0 0.5rem; }
+    .rb-items li { padding:0.25rem 0 0.25rem 1.6rem; position:relative; font-size:0.88rem; line-height:1.5; }
+    .rb-items li::before { content:"☐"; position:absolute; left:0; color:var(--text-muted); font-size:0.95rem; }
+    .rb-items li.adapter { background:var(--accent-light); margin:0.15rem 0; padding-left:1.6rem; padding-right:0.5rem; border-radius:3px; }
+    .rb-adapter-tag { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; padding:0.1rem 0.35rem; border-radius:2px; color:white; margin-right:0.35rem; }
+    .rb-adapter-tag.govt { background:var(--chip-govt); }
+    .rb-adapter-tag.csr { background:var(--chip-csr); }
+    .rb-adapter-tag.paid { background:var(--chip-paid); }
+    .rb-week-title { font-weight:600; color:var(--text); }
+    .rb-artifact { font-size:0.82rem; color:var(--text-muted); padding:0.15rem 0 0.15rem 1.6rem; }
+    .rb-artifact::before { content:"↳ "; }
+    .rb-divider { border:none; border-top:1px dashed var(--border); margin:1.5rem 0; }
+  </style>
 </head>
 <body>
 
-<nav>
-  <span class="site-id">hetops</span>
-  <a href="index.html" class="active">Batch Lifecycle</a>
-  <a href="checklists.html">Checklists</a>
-  <a href="templates.html">Templates</a>
-</nav>
+<h1>hetops — Batch Runbook</h1>
+<p class="subtitle">Configure the batch. The runbook builds itself.</p>
 
-<h1>Batch Lifecycle</h1>
-<p class="subtitle">Runbook for running a batch. Course design is done — this is execution.</p>
+<!-- ===== FORM ===== -->
+<div class="batch-form">
+  <h2>Batch Configuration</h2>
 
-<!-- 7-Stage Flow -->
-<div class="os-flow">
-  <div class="flow-item ops"><span class="num">BL-1</span>Pre-Auth</div>
-  <div class="flow-item ops"><span class="num">BL-2</span>Mobilize</div>
-  <div class="flow-item ops"><span class="num">BL-3</span>Kick-Off</div>
-  <div class="flow-item ops"><span class="num">BL-4</span>Delivery</div>
-  <div class="flow-item ops"><span class="num">BL-5</span>Assessment</div>
-  <div class="flow-item ops"><span class="num">BL-6</span>Certification</div>
-  <div class="flow-item ops"><span class="num">BL-7</span>Livelihood</div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Course</label>
+      <select id="f-course"><option value="">Loading courses…</option></select>
+      <div id="course-info" class="course-info" style="display:none;"></div>
+    </div>
+    <div class="form-group">
+      <label>Batch Start Date</label>
+      <input type="date" id="f-start">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Batch Name (auto-generated)</label>
+      <input type="text" id="f-name" readonly>
+      <div class="batch-name-preview">
+        <label style="font-size:0.8rem; font-weight:normal; text-transform:none; letter-spacing:0;">Tags (optional): <input type="text" id="f-tags" placeholder="e.g. pilot, anand-district" style="width:180px; padding:0.2rem 0.4rem; font-size:0.82rem;"></label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Funding Model</label>
+      <div class="funding-checks">
+        <label><input type="checkbox" id="f-govt" value="govt"> Government</label>
+        <label><input type="checkbox" id="f-csr" value="csr"> CSR</label>
+        <label><input type="checkbox" id="f-paid" value="paid"> Paid</label>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Stages -->
-<div class="md-content" style="font-size:0.92rem;">
-
-<h2>BL-1: Pre-Authorization</h2>
-<p><strong>Owner:</strong> Program Manager</p>
-<p><strong>Core question:</strong> <em>"If I open this batch today, can I survive till Tranche-3?"</em></p>
-<p>Verify scheme eligibility, center readiness (branding, biometric, internet), trainer validity (ToT active), district approval, and cash flow projection. <strong>If Pre-Auth fails → do not open the batch.</strong></p>
-
-<h2>BL-2: Mobilization & Enrollment</h2>
-<p><strong>Owner:</strong> Program Manager + Center Coordinator</p>
-<p><strong>Core question:</strong> <em>"Will these candidates pass portal + assessment + livelihood proof?"</em></p>
-<p>Verify Aadhaar, bank, mobile linkage. Validate enterprise pre-existence (for entrepreneur courses). Complete portal enrollment. Mobilize <strong>pre-qualified</strong> learners — women already earning something.</p>
-
-<h2>BL-3: Batch Kick-Off</h2>
-<p><strong>Owner:</strong> Program Manager + Center Coordinator</p>
-<p><strong>Core question:</strong> <em>"Can an auditor reconstruct Day 1 exactly?"</em></p>
-<p>Day-1 ceremony, branding photos, biometric dry-run, trainer-learner mapping, SID batch activation (if govt), baseline capture (income, channels, habits), WhatsApp group.</p>
-
-<h2>BL-4: Training Delivery</h2>
-<p><strong>Owner:</strong> Trainer (primary) · Center Coordinator (guardrail)</p>
-<p><strong>Core question:</strong> <em>"Can I defend every class conducted?"</em></p>
-<p>Daily biometric attendance, weekly review, QA checkpoints at Week 2/4/6. Delivery is compliance-critical — an un-defended class = audit risk.</p>
-
-<h2>BL-5: Assessment Readiness</h2>
-<p><strong>Owner:</strong> Assessment Lead</p>
-<p><strong>Core question:</strong> <em>"Who is likely to fail, and why?"</em></p>
-<p>Mock assessment at Week 6 (non-negotiable). Remedial action for at-risk candidates. Assessment agency coordination. Every failed candidate = lost revenue.</p>
-
-<h2>BL-6: Certification & Closure</h2>
-<p><strong>Owner:</strong> Documentation Officer + Program Manager</p>
-<p><strong>Core question:</strong> <em>"Is anything left unuploaded or unverified?"</em></p>
-<p>Certificates issued, attendance reconciled, batch closed on portal, documents archived, feedback + testimonials collected. Sloppy closure = delayed Tranche-2.</p>
-
-<h2>BL-7: Livelihood & Tranche-3</h2>
-<p><strong>Owner:</strong> Documentation Officer</p>
-<p><strong>Core question:</strong> <em>"Can I prove income?"</em></p>
-<p>30/60/90-day follow-up. Evidence: Udyam certificate, digital storefront screenshots, UPI transactions, geo-tagged photos, success stories. This stage determines profitability.</p>
-
+<!-- ===== RUNBOOK (generated) ===== -->
+<div id="runbook">
+  <div class="rb-empty">Select a course and start date to generate the runbook.</div>
 </div>
 
-<!-- Roles -->
-<h2>Roles & Ownership</h2>
-<div class="md-content" style="font-size:0.92rem;">
-  <table>
-    <tr><th>Stage</th><th>Primary Owner</th><th>Supporting</th></tr>
-    <tr><td>BL-1: Pre-Auth</td><td>Program Manager</td><td>—</td></tr>
-    <tr><td>BL-2: Mobilize</td><td>Program Manager</td><td>Center Coordinator</td></tr>
-    <tr><td>BL-3: Kick-Off</td><td>Program Manager</td><td>Center Coordinator, Trainer</td></tr>
-    <tr><td>BL-4: Delivery</td><td>Trainer</td><td>Center Coordinator</td></tr>
-    <tr><td>BL-5: Assessment</td><td>Assessment Lead</td><td>Trainer (remedial)</td></tr>
-    <tr><td>BL-6: Certification</td><td>Documentation Officer</td><td>Program Manager</td></tr>
-    <tr><td>BL-7: Livelihood</td><td>Documentation Officer</td><td>Program Manager</td></tr>
-  </table>
-</div>
+<footer>hetops · Batch Runbook</footer>
 
-<footer>
-  hetops · Batch Runbook
-</footer>
+<script>
+// ===== DATA =====
+let courses = [];
+let currentCourse = null;
+
+// Checklist data for each BL stage
+const BL = {
+  preBatch: {
+    id: 'pre-batch', title: 'Pre-Batch Setup', blStage: 'BL-1', owner: 'Program Manager',
+    q: 'If I open this batch today, can I survive till Tranche-3?',
+    weekOffset: -2, // weeks before start
+    items: {
+      decision: [
+        'Scheme eligibility confirmed for this course',
+        'Can self-finance until Tranche-1 arrives',
+        'Credible mobilization pipeline exists for this geography'
+      ],
+      execution: [
+        'Center geo-tagged and registered on SID (if govt)',
+        'Center branding complete (banners, photos taken)',
+        'Biometric devices available and tested',
+        'Internet connection stable',
+        'Equipment mapped to job role available',
+        'Trainer assigned with valid ToT certification',
+        'District Skill Committee contacted / comfort note obtained'
+      ],
+      evidence: [
+        'Center photos (exterior, classroom, branding) archived',
+        'Trainer ToT certificate copy filed',
+        'Scheme eligibility confirmation documented',
+        'Cash flow projection saved'
+      ]
+    },
+    adapters: {
+      govt: [
+        'TP registration active on SID',
+        'Training Center geo-tagged and verified on SID',
+        'Trainer mapped to job role on SID with valid ToT',
+        'Scheme eligibility confirmed (PMKVY / SSDM / DDU-GKY / NULM)',
+        'Batch created on SID (any error blocks payment)'
+      ],
+      csr: [
+        'MOU signed with sponsor (scope, KPIs, reporting cadence)',
+        'Safeguarding policy acknowledged',
+        'Sponsor reporting template confirmed',
+        'Baseline data fields aligned with sponsor KPIs',
+        'Brand guidelines confirmed (logo placement, messaging)'
+      ],
+      paid: [
+        'Pricing finalized (fee structure, installment options)',
+        'Refund policy published',
+        'Payment collection method set up (UPI, bank, online)',
+        'Scholarship slots defined (if any)',
+        'Marketing materials created (flyer, WhatsApp, social)'
+      ]
+    }
+  },
+
+  mobilize: {
+    id: 'mobilize', title: 'Mobilization & Enrollment', blStage: 'BL-2', owner: 'Program Manager + Center Coordinator',
+    q: 'Will these candidates pass portal + assessment + livelihood proof?',
+    weekOffset: -1,
+    items: {
+      decision: [
+        'Each candidate meets scheme eligibility criteria',
+        'Pre-existing enterprise validated (for entrepreneur courses)',
+        'Each candidate can realistically pass assessment'
+      ],
+      execution: [
+        'Aadhaar copy collected and verified',
+        'Bank account verified (in candidate\'s name)',
+        'Mobile number linked to Aadhaar',
+        'Aadhaar–mobile–bank linkage confirmed',
+        'Age eligibility verified',
+        'Consent & declaration forms signed',
+        'Enterprise pre-existence validated (photos, product samples)',
+        'Portal enrollment completed (if govt)'
+      ],
+      evidence: [
+        'Aadhaar copy filed',
+        'Bank passbook / cancelled cheque copy filed',
+        'Consent forms filed',
+        'Enterprise pre-existence photos archived',
+        'Portal enrollment screenshot saved'
+      ]
+    },
+    adapters: {
+      govt: ['All learner details uploaded and verified on SID', 'Center verified on portal'],
+      csr: [],
+      paid: []
+    }
+  },
+
+  kickOff: {
+    id: 'kick-off', title: 'Batch Kick-Off', blStage: 'BL-3', owner: 'Program Manager + Center Coordinator',
+    q: 'Can an auditor reconstruct Day 1 exactly?',
+    weekOffset: 0, // week 1
+    items: {
+      execution: [
+        'Day-1 ceremony conducted',
+        'Branding photos taken (classroom, banner, group photo)',
+        'Biometric dry-run completed (all devices working)',
+        'Trainer-learner mapping documented',
+        'Batch activation confirmed on SID (if govt)',
+        'Baseline capture completed (income, channels, pricing habits)',
+        'WhatsApp group created',
+        'Code of conduct shared and acknowledged',
+        'Tools check done (smartphones, UPI, printer/scanner)'
+      ],
+      evidence: [
+        'Day-1 ceremony photos archived (geo-tagged)',
+        'Biometric test log saved',
+        'Baseline survey responses filed',
+        'SID batch activation screenshot saved'
+      ]
+    },
+    adapters: { govt: [], csr: [], paid: [] }
+  },
+
+  delivery: {
+    id: 'delivery', title: 'Training Delivery', blStage: 'BL-4', owner: 'Trainer + Center Coordinator',
+    q: 'Can I defend every class conducted?',
+    // This spans multiple weeks — handled specially
+    items: {
+      daily: [
+        'Biometric attendance captured (+ manual fallback)',
+        'Session conducted as per curriculum plan',
+        'Learner artifacts produced (per weekly plan)'
+      ],
+      weekly: [
+        'Attendance rate reviewed (flag if < 80%)',
+        'Equipment usage verified',
+        'Internal review note written',
+        'Evidence folder up to date'
+      ],
+      qaPlan: [
+        { week: 2, items: ['Attendance trend acceptable', 'First artifact complete per learner', 'Drop-off risk identified → intervention'] },
+        { week: 4, items: ['Digital presence verified (catalog live?)', 'Trainer substitution log (if any)', 'Equipment issues escalated'] }
+      ],
+      substitution: [
+        'Backup trainer pre-approved',
+        'Handover notes prepared',
+        'Learners informed',
+        'Attendance continues uninterrupted'
+      ]
+    },
+    adapters: {
+      govt: [
+        'Aadhaar biometric attendance captured daily',
+        'Backup biometric device available',
+        'Attendance fallback protocol documented',
+        'SID attendance sync verified weekly',
+        'Skill India branding visible in all class photos'
+      ],
+      csr: [
+        'Sponsor updates sent at agreed cadence',
+        'Photo evidence per sponsor requirements',
+        'Safeguarding protocols followed',
+        'Sample evidence collected for mid-term report'
+      ],
+      paid: [
+        'Payment status tracked per learner',
+        'Satisfaction check-in at Week 2',
+        'Value front-loading (tangible outcomes in first 2 weeks)',
+        'NPS / satisfaction pulse at Week 4'
+      ]
+    }
+  },
+
+  assessment: {
+    id: 'assessment', title: 'Assessment Readiness', blStage: 'BL-5', owner: 'Assessment Lead',
+    q: 'Who is likely to fail, and why?',
+    weekOffsetFromEnd: -2, // 2 weeks before end
+    items: {
+      decision: [
+        'Mock pass rate ≥ 70%? (If not, escalate)',
+        'All candidates have complete document files',
+        'Assessment agency confirmed dates and logistics'
+      ],
+      execution: [
+        'Mock assessment conducted (non-negotiable)',
+        'Mock results documented per candidate',
+        'Remedial action plan for at-risk candidates',
+        'Extra coaching sessions scheduled (if needed)',
+        'Assessment agency coordination complete',
+        'Candidate readiness declaration signed',
+        'All candidate photos, IDs, and artifacts ready'
+      ],
+      evidence: [
+        'Mock assessment scores filed',
+        'Remedial action log filed',
+        'Assessment agency confirmation saved',
+        'Candidate readiness declarations filed'
+      ]
+    },
+    adapters: {
+      govt: [
+        'Third-party assessment agency engaged via SSC/NSDC',
+        'Assessor travel and logistics confirmed',
+        'Assessment result uploaded to portal'
+      ],
+      csr: [],
+      paid: []
+    }
+  },
+
+  closure: {
+    id: 'closure', title: 'Certification & Closure', blStage: 'BL-6', owner: 'Documentation Officer + Program Manager',
+    q: 'Is anything left unuploaded or unverified?',
+    weekOffsetFromEnd: 0, // last week
+    items: {
+      execution: [
+        'Assessment completed (all candidates assessed)',
+        'Assessment results received from agency',
+        'Certificates issued to all passing candidates',
+        'Certificate receipt acknowledgment collected',
+        'Final attendance reconciliation (portal vs actual)',
+        'Batch closure completed on portal (if govt)',
+        'Feedback survey collected from all learners',
+        'Testimonials captured (3–5 minimum)',
+        'All physical documents filed and organized',
+        'Digital evidence archive complete and backed up'
+      ],
+      evidence: [
+        'Assessment result sheet filed',
+        'Certificate distribution register filed',
+        'Final attendance register reconciled and filed',
+        'Portal closure screenshot saved',
+        'Feedback survey responses compiled',
+        'Testimonial files archived'
+      ]
+    },
+    adapters: {
+      govt: [
+        'Batch closed on SID portal',
+        'Certificate issued via SSC',
+        'Final attendance reconciliation: portal vs register'
+      ],
+      csr: [
+        'Sponsor interim report submitted',
+        'Success stories captured (3–5 with photos)',
+        'Before/after comparison data compiled'
+      ],
+      paid: [
+        'Completion certificates issued (your brand)',
+        'NPS survey collected',
+        'Testimonial capture (for marketing)',
+        'Alumni club / WhatsApp group activated',
+        'Upsell offered (advanced module, mentorship)'
+      ]
+    }
+  },
+
+  livelihood: {
+    id: 'livelihood', title: 'Livelihood & Follow-Up', blStage: 'BL-7', owner: 'Documentation Officer',
+    q: 'Can I prove income?',
+    // Post-batch — Day 30, 60, 90
+    items: {
+      day30: [
+        'Follow-up call completed for each learner',
+        'WhatsApp catalog still active? (screenshot)',
+        'At least 1 sales transaction or inquiry (evidence)',
+        'Learners needing support identified → intervention'
+      ],
+      day60: [
+        'Follow-up call completed',
+        'Income proxy collected (orders/month, UPI, repeat customers)',
+        'Udyam certificate obtained (or in progress)',
+        'Geo-tagged photos taken (if applicable)'
+      ],
+      day90: [
+        'Final follow-up completed',
+        'Success story / testimonial captured',
+        'Peer mentoring connection made',
+        'Referral captured (for next batch)',
+        'Income evidence compiled into proof pack'
+      ],
+      evidencePack: [
+        'Udyam certificates',
+        'Digital storefront screenshots',
+        'Income proxy documents (UPI, bank, order threads)',
+        'Geo-tagged photos',
+        'Testimonials / success stories',
+        'Before/after income comparison'
+      ]
+    },
+    adapters: {
+      govt: [
+        'Tranche-3: livelihood evidence uploaded to portal',
+        'Tranche-3: self-declaration by learners',
+        'Tranche-3 submission prepared'
+      ],
+      csr: [
+        'Full impact report drafted',
+        'Quantitative: trained, completed, certified, income change',
+        'Qualitative: testimonials, case studies, photos',
+        'Sustainability narrative',
+        'Report submitted to sponsor'
+      ],
+      paid: [
+        'Referral program activated',
+        'Repeat purchase tracking',
+        'Testimonials published (website, social media)',
+        'Case studies created for future marketing'
+      ]
+    }
+  }
+};
+
+
+// ===== LOAD COURSES =====
+async function loadCourses() {
+  try {
+    const catalogRes = await fetch('data/catalog.json');
+    const catalog = await catalogRes.json();
+    const sel = document.getElementById('f-course');
+    sel.innerHTML = '<option value="">— Select a course —</option>';
+    for (const file of catalog) {
+      const res = await fetch('data/' + file);
+      const c = await res.json();
+      courses.push(c);
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name + ' (' + c.durationWeeks + ' weeks)';
+      sel.appendChild(opt);
+    }
+  } catch(e) {
+    console.error('Failed to load courses:', e);
+    document.getElementById('f-course').innerHTML = '<option value="">Error loading courses</option>';
+  }
+}
+
+// ===== HELPERS =====
+function fmt(d) {
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+function addWeeks(d, n) { return addDays(d, n * 7); }
+function weekRange(start, weekNum) {
+  const s = addWeeks(start, weekNum);
+  const e = addDays(s, 6);
+  return fmt(s) + ' – ' + fmt(e);
+}
+
+function genBatchName(course, startDate, tags) {
+  if (!course || !startDate) return '';
+  const d = new Date(startDate);
+  const mon = d.toLocaleString('en', { month:'short' }).toUpperCase();
+  const yr = d.getFullYear().toString().slice(-2);
+  let name = course.shortName + '-' + mon + yr;
+  if (tags && tags.trim()) {
+    name += '-' + tags.trim().replace(/\s+/g, '-').toLowerCase();
+  }
+  return name;
+}
+
+function getSelectedFunding() {
+  const f = [];
+  if (document.getElementById('f-govt').checked) f.push('govt');
+  if (document.getElementById('f-csr').checked) f.push('csr');
+  if (document.getElementById('f-paid').checked) f.push('paid');
+  return f;
+}
+
+// ===== RENDER =====
+function renderItems(items, adapters, funding) {
+  let html = '<ul class="rb-items">';
+  for (const item of items) {
+    html += '<li>' + item + '</li>';
+  }
+  // Adapter items
+  for (const f of funding) {
+    const adapterItems = adapters[f] || [];
+    const label = f.charAt(0).toUpperCase() + f.slice(1);
+    for (const item of adapterItems) {
+      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + label + '</span>' + item + '</li>';
+    }
+  }
+  html += '</ul>';
+  return html;
+}
+
+function renderSection(title, items) {
+  if (!items || items.length === 0) return '';
+  let html = '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">';
+  for (const item of items) html += '<li>' + item + '</li>';
+  html += '</ul></div>';
+  return html;
+}
+
+function renderAdapterItems(adapters, funding) {
+  let html = '';
+  for (const f of funding) {
+    const items = adapters[f] || [];
+    if (items.length === 0) continue;
+    const label = f.charAt(0).toUpperCase() + f.slice(1);
+    for (const item of items) {
+      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + label + '</span>' + item + '</li>';
+    }
+  }
+  return html;
+}
+
+function renderRunbook() {
+  const courseId = document.getElementById('f-course').value;
+  const startStr = document.getElementById('f-start').value;
+  const tags = document.getElementById('f-tags').value;
+  const funding = getSelectedFunding();
+  const container = document.getElementById('runbook');
+
+  const course = courses.find(c => c.id === courseId);
+  if (!course || !startStr) {
+    container.innerHTML = '<div class="rb-empty">Select a course and start date to generate the runbook.</div>';
+    document.getElementById('f-name').value = '';
+    document.getElementById('course-info').style.display = 'none';
+    return;
+  }
+
+  // Update batch name
+  const startDate = new Date(startStr);
+  document.getElementById('f-name').value = genBatchName(course, startStr, tags);
+
+  // Show course info
+  const info = document.getElementById('course-info');
+  info.style.display = 'block';
+  info.innerHTML = '<span><strong>Duration:</strong> ' + course.durationWeeks + ' weeks</span>'
+    + '<span><strong>NSQF:</strong> Level ' + course.nsqfLevel + '</span>'
+    + '<span><strong>Job Role:</strong> ' + course.jobRole + '</span>'
+    + '<span><strong>SSC:</strong> ' + course.ssc + '</span>';
+
+  const endDate = addWeeks(startDate, course.durationWeeks);
+  const dur = course.durationWeeks;
+  let html = '';
+
+  // ----- PRE-BATCH (Week -2 to -1) -----
+  const pb = BL.preBatch;
+  html += '<div class="rb-phase" id="rb-' + pb.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + pb.blStage + ': ' + pb.title + '</h2>';
+  html += '<span class="rb-dates">' + weekRange(startDate, -2) + '</span>';
+  html += '<span class="rb-owner">' + pb.owner + '</span></div>';
+  html += '<div class="rb-q">' + pb.q + '</div>';
+  html += '<div class="rb-section"><h3>Decision (Go / No-Go)</h3><ul class="rb-items">';
+  for (const i of pb.items.decision) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
+  for (const i of pb.items.execution) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(pb.adapters, funding);
+  html += '</ul></div>';
+  // Course-specific: equipment + trainer + enrollment criteria
+  html += '<div class="rb-section"><h3>Course-Specific Setup</h3><ul class="rb-items">';
+  for (const eq of course.equipmentNeeded) html += '<li>Equipment: ' + eq + '</li>';
+  for (const tp of course.trainerPrereqs) html += '<li>Trainer: ' + tp + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
+  for (const i of pb.items.evidence) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- MOBILIZE (Week -1) -----
+  const mob = BL.mobilize;
+  html += '<div class="rb-phase" id="rb-' + mob.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + mob.blStage + ': ' + mob.title + '</h2>';
+  html += '<span class="rb-dates">' + weekRange(startDate, -1) + '</span>';
+  html += '<span class="rb-owner">' + mob.owner + '</span></div>';
+  html += '<div class="rb-q">' + mob.q + '</div>';
+  html += '<div class="rb-section"><h3>Decision</h3><ul class="rb-items">';
+  for (const i of mob.items.decision) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
+  for (const i of mob.items.execution) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(mob.adapters, funding);
+  html += '</ul></div>';
+  // Enrollment criteria from course
+  html += '<div class="rb-section"><h3>Enrollment Criteria (from course design)</h3><ul class="rb-items">';
+  for (const ec of course.enrollmentCriteria) html += '<li>' + ec + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
+  for (const i of mob.items.evidence) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- KICK-OFF (Week 1) -----
+  const ko = BL.kickOff;
+  html += '<div class="rb-phase" id="rb-' + ko.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + ko.blStage + ': ' + ko.title + '</h2>';
+  html += '<span class="rb-dates">' + weekRange(startDate, 0) + '</span>';
+  html += '<span class="rb-owner">' + ko.owner + '</span></div>';
+  html += '<div class="rb-q">' + ko.q + '</div>';
+  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
+  for (const i of ko.items.execution) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+  // Baseline from course evidence
+  html += '<div class="rb-section"><h3>Baseline Capture</h3><ul class="rb-items">';
+  for (const b of course.evidenceArtifacts.baseline) html += '<li>' + b + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
+  for (const i of ko.items.evidence) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- DELIVERY (Week 1 through N-2) — Per-week view -----
+  const del = BL.delivery;
+  html += '<div class="rb-phase" id="rb-' + del.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + del.blStage + ': ' + del.title + '</h2>';
+  html += '<span class="rb-dates">' + fmt(startDate) + ' – ' + fmt(addWeeks(startDate, dur - 2)) + '</span>';
+  html += '<span class="rb-owner">' + del.owner + '</span></div>';
+  html += '<div class="rb-q">' + del.q + '</div>';
+
+  // Daily + weekly recurring
+  html += '<div class="rb-section"><h3>Daily (every class day)</h3><ul class="rb-items">';
+  for (const i of del.items.daily) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(del.adapters, funding);
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Weekly (every week)</h3><ul class="rb-items">';
+  for (const i of del.items.weekly) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+
+  // Per-week modules from course
+  const deliveryWeeks = Math.max(dur - 2, dur); // show all module weeks
+  for (let w = 0; w < course.modules.length; w++) {
+    const mod = course.modules[w];
+    html += '<div class="rb-section"><h3><span class="rb-week-title">Week ' + mod.week + ':</span> ' + mod.title;
+    html += ' <span class="rb-dates">(' + weekRange(startDate, w) + ')</span></h3>';
+    html += '<ul class="rb-items">';
+    for (const a of mod.artifacts) html += '<li>Artifact: ' + a + '</li>';
+
+    // QA checkpoints
+    for (const qa of del.items.qaPlan) {
+      if (qa.week === mod.week) {
+        html += '<li style="font-weight:600; color:var(--stage-ops);">⚑ QA Checkpoint</li>';
+        for (const qi of qa.items) html += '<li>' + qi + '</li>';
+      }
+    }
+    html += '</ul></div>';
+  }
+
+  // Substitution protocol
+  html += '<div class="rb-section"><h3>Trainer Substitution Protocol</h3><ul class="rb-items">';
+  for (const i of del.items.substitution) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- ASSESSMENT (Week N-2) -----
+  const asmtWeek = dur - 2;
+  const asmt = BL.assessment;
+  html += '<div class="rb-phase" id="rb-' + asmt.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + asmt.blStage + ': ' + asmt.title + '</h2>';
+  html += '<span class="rb-dates">' + weekRange(startDate, asmtWeek) + '</span>';
+  html += '<span class="rb-owner">' + asmt.owner + '</span></div>';
+  html += '<div class="rb-q">' + asmt.q + '</div>';
+  html += '<div class="rb-section"><h3>Decision</h3><ul class="rb-items">';
+  for (const i of asmt.items.decision) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
+  for (const i of asmt.items.execution) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(asmt.adapters, funding);
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
+  for (const i of asmt.items.evidence) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- CLOSURE (Last week) -----
+  const closureWeek = dur - 1;
+  const cl = BL.closure;
+  html += '<div class="rb-phase" id="rb-' + cl.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + cl.blStage + ': ' + cl.title + '</h2>';
+  html += '<span class="rb-dates">' + weekRange(startDate, closureWeek) + '</span>';
+  html += '<span class="rb-owner">' + cl.owner + '</span></div>';
+  html += '<div class="rb-q">' + cl.q + '</div>';
+  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
+  for (const i of cl.items.execution) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(cl.adapters, funding);
+  html += '</ul></div>';
+  // End-course evidence from course
+  html += '<div class="rb-section"><h3>End-Course Evidence</h3><ul class="rb-items">';
+  for (const e of course.evidenceArtifacts.endCourse) html += '<li>' + e + '</li>';
+  html += '</ul></div>';
+  html += '<div class="rb-section"><h3>Archive Evidence</h3><ul class="rb-items">';
+  for (const i of cl.items.evidence) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  // ----- LIVELIHOOD (Day 30 / 60 / 90) -----
+  const lv = BL.livelihood;
+  html += '<div class="rb-phase" id="rb-' + lv.id + '">';
+  html += '<div class="rb-phase-hdr"><h2>' + lv.blStage + ': ' + lv.title + '</h2>';
+  html += '<span class="rb-dates">' + fmt(endDate) + ' – ' + fmt(addDays(endDate, 90)) + '</span>';
+  html += '<span class="rb-owner">' + lv.owner + '</span></div>';
+  html += '<div class="rb-q">' + lv.q + '</div>';
+
+  html += '<div class="rb-section"><h3>Day 30 (' + fmt(addDays(endDate, 30)) + ')</h3><ul class="rb-items">';
+  for (const i of lv.items.day30) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+
+  html += '<div class="rb-section"><h3>Day 60 (' + fmt(addDays(endDate, 60)) + ')</h3><ul class="rb-items">';
+  for (const i of lv.items.day60) html += '<li>' + i + '</li>';
+  html += '</ul></div>';
+
+  html += '<div class="rb-section"><h3>Day 90 (' + fmt(addDays(endDate, 90)) + ')</h3><ul class="rb-items">';
+  for (const i of lv.items.day90) html += '<li>' + i + '</li>';
+  html += renderAdapterItems(lv.adapters, funding);
+  html += '</ul></div>';
+
+  // Post-course evidence from course
+  html += '<div class="rb-section"><h3>Post-Course Evidence (from course design)</h3><ul class="rb-items">';
+  for (const e of course.evidenceArtifacts.postCourse) html += '<li>' + e + '</li>';
+  html += '</ul></div>';
+
+  html += '<div class="rb-section"><h3>Evidence Pack (Final)</h3><ul class="rb-items">';
+  for (const i of lv.items.evidencePack) html += '<li>' + i + '</li>';
+  html += '</ul></div></div>';
+
+  container.innerHTML = html;
+}
+
+
+// ===== WIRE UP =====
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadCourses();
+
+  // Set default start date to next Monday
+  const today = new Date();
+  const nextMon = new Date(today);
+  nextMon.setDate(today.getDate() + ((8 - today.getDay()) % 7 || 7));
+  document.getElementById('f-start').value = nextMon.toISOString().split('T')[0];
+
+  // Bind all form changes
+  const inputs = ['f-course', 'f-start', 'f-tags', 'f-govt', 'f-csr', 'f-paid'];
+  for (const id of inputs) {
+    document.getElementById(id).addEventListener('change', renderRunbook);
+    document.getElementById(id).addEventListener('input', renderRunbook);
+  }
+});
+</script>
 
 </body>
 </html>

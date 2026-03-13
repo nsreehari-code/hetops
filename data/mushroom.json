@@ -1,0 +1,26 @@
+{
+  "id": "mushroom",
+  "name": "Mushroom Cultivation & Processing",
+  "shortName": "MUSH",
+  "durationWeeks": 6,
+  "nsqfLevel": 3,
+  "jobRole": "Mushroom Cultivator",
+  "ssc": "Agriculture",
+  "modules": [
+    { "week": 1, "title": "Introduction & Substrate Preparation", "artifacts": ["Substrate batch prepared", "Lab notes"] },
+    { "week": 2, "title": "Spawning & Incubation", "artifacts": ["Spawn bags inoculated", "Incubation log"] },
+    { "week": 3, "title": "Growing Room Management", "artifacts": ["Temperature/humidity log", "Photo of fruiting"] },
+    { "week": 4, "title": "Harvesting & Post-Harvest", "artifacts": ["Harvest weight log", "Packaging samples"] },
+    { "week": 5, "title": "Value Addition & Marketing", "artifacts": ["Processed product sample", "Price list", "Market contact list"] },
+    { "week": 6, "title": "Business Plan & Assessment", "artifacts": ["Business plan", "Cost-revenue projection"] }
+  ],
+  "evidenceArtifacts": {
+    "baseline": ["Current income source", "Available space for cultivation", "Prior agriculture experience"],
+    "inCourse": ["Weekly lab artifacts", "Attendance log", "Cultivation progress photos"],
+    "endCourse": ["Assessment result", "Certificate", "Harvest output record"],
+    "postCourse": ["Production log", "Sales receipts", "Market stall photos", "Income proxy"]
+  },
+  "trainerPrereqs": ["ToT certified", "SSC Agriculture certified", "Practical mushroom cultivation experience"],
+  "equipmentNeeded": ["Growing room / shed", "Substrate materials", "Spawn", "Thermometer/hygrometer", "Weighing scale", "Biometric device"],
+  "enrollmentCriteria": ["Age 18-55", "Access to cultivation space", "Aadhaar + bank account"]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "wmdg",
+  "name": "Women Mobile Digital Gujarat",
+  "shortName": "WMDG",
+  "durationWeeks": 8,
+  "nsqfLevel": 4,
+  "jobRole": "Entrepreneur (Digital Micro-Enterprise)",
+  "ssc": "Entrepreneurship",
+  "modules": [
+    { "week": 1, "title": "Digital Basics & Business Mindset", "artifacts": ["Profile photo", "Business idea note"] },
+    { "week": 2, "title": "WhatsApp Business Setup", "artifacts": ["WhatsApp Business profile", "Catalog with 5 products"] },
+    { "week": 3, "title": "Product Photography & Pricing", "artifacts": ["10 product photos", "Price list"] },
+    { "week": 4, "title": "UPI & Digital Payments", "artifacts": ["UPI QR code", "First test transaction"] },
+    { "week": 5, "title": "Social Media Marketing", "artifacts": ["Instagram/Facebook page", "3 posts published"] },
+    { "week": 6, "title": "Order Management & Costing", "artifacts": ["Order tracker sheet", "Cost-per-unit calculation"] },
+    { "week": 7, "title": "Udyam & Formalization", "artifacts": ["Udyam registration screenshot", "Loan awareness note"] },
+    { "week": 8, "title": "Capstone & Pitch", "artifacts": ["Business plan 1-pager", "Pitch presentation"] }
+  ],
+  "evidenceArtifacts": {
+    "baseline": ["Current monthly income", "Existing sales channels", "Product/service type"],
+    "inCourse": ["Weekly artifacts per module", "Attendance log", "QA checkpoint notes"],
+    "endCourse": ["Assessment result", "Certificate", "Feedback form"],
+    "postCourse": ["Udyam certificate", "WhatsApp catalog screenshot", "UPI transaction proof", "Geo-tagged photos"]
+  },
+  "trainerPrereqs": ["ToT certified", "SSC Entrepreneurship certified", "Fluent in Gujarati"],
+  "equipmentNeeded": ["Smartphones (1 per learner)", "Printer/scanner", "Projector", "Biometric device", "Internet connection"],
+  "enrollmentCriteria": ["Women 18-45", "Existing micro-enterprise or SHG member", "Aadhaar + bank account", "Own smartphone preferred"]
+}

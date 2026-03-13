@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HET Skilling OS — Batch Lifecycle</title>
+  <title>hetops — Batch Runbook</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,130 +11,82 @@
 <nav>
   <span class="site-id">hetops</span>
   <a href="index.html" class="active">Batch Lifecycle</a>
-  <a href="templates/index.html">Templates</a>
-  <a href="checklists/index.html">Checklists</a>
-  <a href="evidence-spines/index.html">Evidence Spines</a>
-  <a href="adapters/index.html">Adapters</a>
-  <a href="roles.html">Roles</a>
-  <a href="records/index.html">Decision Records</a>
-  <a href="how-to-use.html">How to Use</a>
+  <a href="checklists.html">Checklists</a>
+  <a href="templates.html">Templates</a>
 </nav>
 
-<h1>HET Skilling OS — Batch Lifecycle</h1>
-<p class="subtitle">The repeating unit of skilling. Every batch goes through these 7 stages. Course design is already done — this is where execution happens.</p>
+<h1>Batch Lifecycle</h1>
+<p class="subtitle">Runbook for running a batch. Course design is done — this is execution.</p>
 
-<div class="md-content" style="background:var(--accent-light); border-color:var(--accent); font-size:0.9rem; padding:1rem 1.25rem; margin-bottom:1.5rem;">
-  <strong>Thumbrule:</strong> If you're <em>doing</em>, it belongs here. If you're <em>deciding</em>, it belongs in <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs</a>.<br>
-  This repo is the <strong>field manual</strong> — checklists, templates, runbooks. Not strategy, not live data.<br>
-  <a href="how-to-use.html">Full guide with examples →</a>
-</div>
-
-<!-- 7-Stage Batch Lifecycle Flow -->
-<h2>The 7 Stages</h2>
-<p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem">
-  Each stage has a micro-pack: decision checklist, execution checklist, evidence checklist, clear owner.
-</p>
-
+<!-- 7-Stage Flow -->
 <div class="os-flow">
-  <a href="batch-lifecycle/1-pre-auth.html" class="flow-item ops"><span class="num">BL-1</span>Pre-Auth</a>
-  <a href="batch-lifecycle/2-mobilize.html" class="flow-item ops"><span class="num">BL-2</span>Mobilize</a>
-  <a href="batch-lifecycle/3-kick-off.html" class="flow-item ops"><span class="num">BL-3</span>Kick-Off</a>
-  <a href="batch-lifecycle/4-delivery.html" class="flow-item ops"><span class="num">BL-4</span>Delivery</a>
-  <a href="batch-lifecycle/5-assessment.html" class="flow-item ops"><span class="num">BL-5</span>Assessment</a>
-  <a href="batch-lifecycle/6-certification.html" class="flow-item ops"><span class="num">BL-6</span>Certification</a>
-  <a href="batch-lifecycle/7-livelihood.html" class="flow-item ops"><span class="num">BL-7</span>Livelihood</a>
+  <div class="flow-item ops"><span class="num">BL-1</span>Pre-Auth</div>
+  <div class="flow-item ops"><span class="num">BL-2</span>Mobilize</div>
+  <div class="flow-item ops"><span class="num">BL-3</span>Kick-Off</div>
+  <div class="flow-item ops"><span class="num">BL-4</span>Delivery</div>
+  <div class="flow-item ops"><span class="num">BL-5</span>Assessment</div>
+  <div class="flow-item ops"><span class="num">BL-6</span>Certification</div>
+  <div class="flow-item ops"><span class="num">BL-7</span>Livelihood</div>
 </div>
 
-<!-- Stage Cards -->
-<div class="stage-grid">
-  <a href="batch-lifecycle/1-pre-auth.html" class="stage-card">
-    <div class="stage-num ops">BL-1</div>
-    <h3>Pre-Authorization</h3>
-    <p>Prevent opening a batch you'll lose money on. Scheme eligibility, center readiness, trainer validity, district approval.</p>
-    <div class="core-q">"If I open this batch today, can I survive till Tranche-3?"</div>
-  </a>
-  <a href="batch-lifecycle/2-mobilize.html" class="stage-card">
-    <div class="stage-num ops">BL-2</div>
-    <h3>Mobilization & Enrollment</h3>
-    <p>Kill enrollment-time rejections. Learner eligibility, document verification, enterprise pre-existence validation.</p>
-    <div class="core-q">"Will these candidates pass portal + assessment + livelihood proof?"</div>
-  </a>
-  <a href="batch-lifecycle/3-kick-off.html" class="stage-card">
-    <div class="stage-num ops">BL-3</div>
-    <h3>Batch Kick-Off</h3>
-    <p>Lock Tranche-1 payment. Day-1 ceremony, biometric dry-run, trainer-learner mapping, batch activation on SID.</p>
-    <div class="core-q">"Can an auditor reconstruct Day 1 exactly?"</div>
-  </a>
-  <a href="batch-lifecycle/4-delivery.html" class="stage-card">
-    <div class="stage-num ops">BL-4</div>
-    <h3>Training Delivery</h3>
-    <p>Survive audits and avoid attendance disputes. Daily attendance SOP, trainer substitution, equipment verification.</p>
-    <div class="core-q">"Can I defend every class conducted?"</div>
-  </a>
-  <a href="batch-lifecycle/5-assessment.html" class="stage-card">
-    <div class="stage-num ops">BL-5</div>
-    <h3>Assessment Readiness</h3>
-    <p>Protect 70% of funding. Mock assessments, remedial action, assessment agency coordination.</p>
-    <div class="core-q">"Who is likely to fail, and why?"</div>
-  </a>
-  <a href="batch-lifecycle/6-certification.html" class="stage-card">
-    <div class="stage-num ops">BL-6</div>
-    <h3>Certification & Closure</h3>
-    <p>Close the loop cleanly. Certificate receipt, final reconciliation, batch closure on portal, document archival.</p>
-    <div class="core-q">"Is anything left unuploaded or unverified?"</div>
-  </a>
-  <a href="batch-lifecycle/7-livelihood.html" class="stage-card">
-    <div class="stage-num ops">BL-7</div>
-    <h3>Livelihood & Tranche-3</h3>
-    <p>Turn training into money. Udyam certificates, digital storefront evidence, income proxies, geo-tagged photos.</p>
-    <div class="core-q">"Can I prove income?"</div>
-  </a>
+<!-- Stages -->
+<div class="md-content" style="font-size:0.92rem;">
+
+<h2>BL-1: Pre-Authorization</h2>
+<p><strong>Owner:</strong> Program Manager</p>
+<p><strong>Core question:</strong> <em>"If I open this batch today, can I survive till Tranche-3?"</em></p>
+<p>Verify scheme eligibility, center readiness (branding, biometric, internet), trainer validity (ToT active), district approval, and cash flow projection. <strong>If Pre-Auth fails → do not open the batch.</strong></p>
+
+<h2>BL-2: Mobilization & Enrollment</h2>
+<p><strong>Owner:</strong> Program Manager + Center Coordinator</p>
+<p><strong>Core question:</strong> <em>"Will these candidates pass portal + assessment + livelihood proof?"</em></p>
+<p>Verify Aadhaar, bank, mobile linkage. Validate enterprise pre-existence (for entrepreneur courses). Complete portal enrollment. Mobilize <strong>pre-qualified</strong> learners — women already earning something.</p>
+
+<h2>BL-3: Batch Kick-Off</h2>
+<p><strong>Owner:</strong> Program Manager + Center Coordinator</p>
+<p><strong>Core question:</strong> <em>"Can an auditor reconstruct Day 1 exactly?"</em></p>
+<p>Day-1 ceremony, branding photos, biometric dry-run, trainer-learner mapping, SID batch activation (if govt), baseline capture (income, channels, habits), WhatsApp group.</p>
+
+<h2>BL-4: Training Delivery</h2>
+<p><strong>Owner:</strong> Trainer (primary) · Center Coordinator (guardrail)</p>
+<p><strong>Core question:</strong> <em>"Can I defend every class conducted?"</em></p>
+<p>Daily biometric attendance, weekly review, QA checkpoints at Week 2/4/6. Delivery is compliance-critical — an un-defended class = audit risk.</p>
+
+<h2>BL-5: Assessment Readiness</h2>
+<p><strong>Owner:</strong> Assessment Lead</p>
+<p><strong>Core question:</strong> <em>"Who is likely to fail, and why?"</em></p>
+<p>Mock assessment at Week 6 (non-negotiable). Remedial action for at-risk candidates. Assessment agency coordination. Every failed candidate = lost revenue.</p>
+
+<h2>BL-6: Certification & Closure</h2>
+<p><strong>Owner:</strong> Documentation Officer + Program Manager</p>
+<p><strong>Core question:</strong> <em>"Is anything left unuploaded or unverified?"</em></p>
+<p>Certificates issued, attendance reconciled, batch closed on portal, documents archived, feedback + testimonials collected. Sloppy closure = delayed Tranche-2.</p>
+
+<h2>BL-7: Livelihood & Tranche-3</h2>
+<p><strong>Owner:</strong> Documentation Officer</p>
+<p><strong>Core question:</strong> <em>"Can I prove income?"</em></p>
+<p>30/60/90-day follow-up. Evidence: Udyam certificate, digital storefront screenshots, UPI transactions, geo-tagged photos, success stories. This stage determines profitability.</p>
+
 </div>
 
-<!-- Ownership Map -->
-<h2>Ownership</h2>
+<!-- Roles -->
+<h2>Roles & Ownership</h2>
 <div class="md-content" style="font-size:0.92rem;">
   <table>
-    <tr><th>Role</th><th>Primary Stages</th></tr>
-    <tr><td><strong>Program Manager</strong></td><td>BL-1, BL-2, BL-3</td></tr>
-    <tr><td><strong>Center Coordinator</strong></td><td>BL-2, BL-3, BL-4</td></tr>
-    <tr><td><strong>Trainer</strong></td><td>BL-4 (primary)</td></tr>
-    <tr><td><strong>Assessment Lead</strong></td><td>BL-5</td></tr>
-    <tr><td><strong>Documentation Officer</strong></td><td>BL-6, BL-7 (the compliance spine)</td></tr>
+    <tr><th>Stage</th><th>Primary Owner</th><th>Supporting</th></tr>
+    <tr><td>BL-1: Pre-Auth</td><td>Program Manager</td><td>—</td></tr>
+    <tr><td>BL-2: Mobilize</td><td>Program Manager</td><td>Center Coordinator</td></tr>
+    <tr><td>BL-3: Kick-Off</td><td>Program Manager</td><td>Center Coordinator, Trainer</td></tr>
+    <tr><td>BL-4: Delivery</td><td>Trainer</td><td>Center Coordinator</td></tr>
+    <tr><td>BL-5: Assessment</td><td>Assessment Lead</td><td>Trainer (remedial)</td></tr>
+    <tr><td>BL-6: Certification</td><td>Documentation Officer</td><td>Program Manager</td></tr>
+    <tr><td>BL-7: Livelihood</td><td>Documentation Officer</td><td>Program Manager</td></tr>
   </table>
-  <blockquote>Trainers should <strong>never</strong> be sole custodians of compliance.</blockquote>
-</div>
-
-<!-- Operational Surfaces -->
-<h2>Operational Surfaces</h2>
-<div class="section-grid">
-  <a href="templates/index.html" class="section-link">
-    <h4>Templates</h4>
-    <p>CCF sections D–I, batch runbook</p>
-  </a>
-  <a href="checklists/index.html" class="section-link">
-    <h4>Checklists</h4>
-    <p>7 micro-packs — one per batch lifecycle stage</p>
-  </a>
-  <a href="evidence-spines/index.html" class="section-link">
-    <h4>Evidence Spines</h4>
-    <p>Per-course evidence artifact definitions</p>
-  </a>
-  <a href="adapters/index.html" class="section-link">
-    <h4>Operational Adapters</h4>
-    <p>Govt / CSR / Paid — operational checklists</p>
-  </a>
-  <a href="records/index.html" class="section-link">
-    <h4>Decision Records</h4>
-    <p>Operational decisions — append-only</p>
-  </a>
 </div>
 
 <footer>
-  HET Skilling OS · Batch Lifecycle · <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs (strategy)</a>
+  hetops · Batch Runbook
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="js/app.js"></script>
 </body>
 </html>

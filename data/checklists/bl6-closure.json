@@ -1,0 +1,41 @@
+{
+  "id": "closure",
+  "blStage": "BL-6",
+  "title": "Certification & Closure",
+  "owner": "Documentation Officer + Program Manager",
+  "coreQuestion": "Is anything left unuploaded or unverified?",
+  "weekOffsetFromEnd": 0,
+  "sections": {
+    "execution": {
+      "title": "Execution",
+      "items": [
+        "Assessment completed (all candidates assessed)",
+        "Assessment results received from agency",
+        "Certificates issued to all passing candidates",
+        "Certificate receipt acknowledgment collected",
+        "Final attendance reconciliation (portal vs actual)",
+        "Batch closure completed on portal (if govt)",
+        "Feedback survey collected from all learners",
+        "Testimonials captured (3–5 minimum)",
+        "All physical documents filed and organized",
+        "Digital evidence archive complete and backed up"
+      ]
+    },
+    "evidence": {
+      "title": "Archive Evidence",
+      "items": [
+        "Assessment result sheet filed",
+        "Certificate distribution register filed",
+        "Final attendance register reconciled and filed",
+        "Portal closure screenshot saved",
+        "Feedback survey responses compiled",
+        "Testimonial files archived"
+      ]
+    }
+  },
+  "courseSpecific": {
+    "show": true,
+    "title": "End-Course Evidence",
+    "fields": ["evidenceArtifacts.endCourse"]
+  }
+}

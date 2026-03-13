@@ -1,0 +1,39 @@
+{
+  "id": "assessment",
+  "blStage": "BL-5",
+  "title": "Assessment Readiness",
+  "owner": "Assessment Lead",
+  "coreQuestion": "Who is likely to fail, and why?",
+  "weekOffsetFromEnd": -2,
+  "sections": {
+    "decision": {
+      "title": "Decision",
+      "items": [
+        "Mock pass rate ≥ 70%? (If not, escalate)",
+        "All candidates have complete document files",
+        "Assessment agency confirmed dates and logistics"
+      ]
+    },
+    "execution": {
+      "title": "Execution",
+      "items": [
+        "Mock assessment conducted (non-negotiable)",
+        "Mock results documented per candidate",
+        "Remedial action plan for at-risk candidates",
+        "Extra coaching sessions scheduled (if needed)",
+        "Assessment agency coordination complete",
+        "Candidate readiness declaration signed",
+        "All candidate photos, IDs, and artifacts ready"
+      ]
+    },
+    "evidence": {
+      "title": "Evidence",
+      "items": [
+        "Mock assessment scores filed",
+        "Remedial action log filed",
+        "Assessment agency confirmation saved",
+        "Candidate readiness declarations filed"
+      ]
+    }
+  }
+}

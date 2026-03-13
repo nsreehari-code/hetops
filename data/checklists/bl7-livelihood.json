@@ -1,0 +1,54 @@
+{
+  "id": "livelihood",
+  "blStage": "BL-7",
+  "title": "Livelihood & Follow-Up",
+  "owner": "Documentation Officer",
+  "coreQuestion": "Can I prove income?",
+  "spanType": "post-batch",
+  "sections": {
+    "day30": {
+      "title": "Day 30",
+      "items": [
+        "Follow-up call completed for each learner",
+        "WhatsApp catalog still active? (screenshot)",
+        "At least 1 sales transaction or inquiry (evidence)",
+        "Learners needing support identified → intervention"
+      ]
+    },
+    "day60": {
+      "title": "Day 60",
+      "items": [
+        "Follow-up call completed",
+        "Income proxy collected (orders/month, UPI, repeat customers)",
+        "Udyam certificate obtained (or in progress)",
+        "Geo-tagged photos taken (if applicable)"
+      ]
+    },
+    "day90": {
+      "title": "Day 90",
+      "items": [
+        "Final follow-up completed",
+        "Success story / testimonial captured",
+        "Peer mentoring connection made",
+        "Referral captured (for next batch)",
+        "Income evidence compiled into proof pack"
+      ]
+    },
+    "evidencePack": {
+      "title": "Evidence Pack (Final)",
+      "items": [
+        "Udyam certificates",
+        "Digital storefront screenshots",
+        "Income proxy documents (UPI, bank, order threads)",
+        "Geo-tagged photos",
+        "Testimonials / success stories",
+        "Before/after income comparison"
+      ]
+    }
+  },
+  "courseSpecific": {
+    "show": true,
+    "title": "Post-Course Evidence (from course design)",
+    "fields": ["evidenceArtifacts.postCourse"]
+  }
+}

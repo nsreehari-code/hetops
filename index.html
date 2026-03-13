@@ -93,324 +93,27 @@
 <footer>hetops · Batch Runbook</footer>
 
 <script>
-// ===== DATA =====
+// ===== STATE =====
 let courses = [];
-let currentCourse = null;
+const stages = [];   // loaded from data/checklists/bl*.json
+const adapters = {}; // loaded from data/checklists/adapter-*.json
 
-// Checklist data for each BL stage
-const BL = {
-  preBatch: {
-    id: 'pre-batch', title: 'Pre-Batch Setup', blStage: 'BL-1', owner: 'Program Manager',
-    q: 'If I open this batch today, can I survive till Tranche-3?',
-    weekOffset: -2, // weeks before start
-    items: {
-      decision: [
-        'Scheme eligibility confirmed for this course',
-        'Can self-finance until Tranche-1 arrives',
-        'Credible mobilization pipeline exists for this geography'
-      ],
-      execution: [
-        'Center geo-tagged and registered on SID (if govt)',
-        'Center branding complete (banners, photos taken)',
-        'Biometric devices available and tested',
-        'Internet connection stable',
-        'Equipment mapped to job role available',
-        'Trainer assigned with valid ToT certification',
-        'District Skill Committee contacted / comfort note obtained'
-      ],
-      evidence: [
-        'Center photos (exterior, classroom, branding) archived',
-        'Trainer ToT certificate copy filed',
-        'Scheme eligibility confirmation documented',
-        'Cash flow projection saved'
-      ]
-    },
-    adapters: {
-      govt: [
-        'TP registration active on SID',
-        'Training Center geo-tagged and verified on SID',
-        'Trainer mapped to job role on SID with valid ToT',
-        'Scheme eligibility confirmed (PMKVY / SSDM / DDU-GKY / NULM)',
-        'Batch created on SID (any error blocks payment)'
-      ],
-      csr: [
-        'MOU signed with sponsor (scope, KPIs, reporting cadence)',
-        'Safeguarding policy acknowledged',
-        'Sponsor reporting template confirmed',
-        'Baseline data fields aligned with sponsor KPIs',
-        'Brand guidelines confirmed (logo placement, messaging)'
-      ],
-      paid: [
-        'Pricing finalized (fee structure, installment options)',
-        'Refund policy published',
-        'Payment collection method set up (UPI, bank, online)',
-        'Scholarship slots defined (if any)',
-        'Marketing materials created (flyer, WhatsApp, social)'
-      ]
-    }
-  },
+const STAGE_FILES = [
+  'bl1-pre-batch.json', 'bl2-mobilize.json', 'bl3-kick-off.json',
+  'bl4-delivery.json', 'bl5-assessment.json', 'bl6-closure.json', 'bl7-livelihood.json'
+];
+const ADAPTER_FILES = ['adapter-govt.json', 'adapter-csr.json', 'adapter-paid.json'];
 
-  mobilize: {
-    id: 'mobilize', title: 'Mobilization & Enrollment', blStage: 'BL-2', owner: 'Program Manager + Center Coordinator',
-    q: 'Will these candidates pass portal + assessment + livelihood proof?',
-    weekOffset: -1,
-    items: {
-      decision: [
-        'Each candidate meets scheme eligibility criteria',
-        'Pre-existing enterprise validated (for entrepreneur courses)',
-        'Each candidate can realistically pass assessment'
-      ],
-      execution: [
-        'Aadhaar copy collected and verified',
-        'Bank account verified (in candidate\'s name)',
-        'Mobile number linked to Aadhaar',
-        'Aadhaar–mobile–bank linkage confirmed',
-        'Age eligibility verified',
-        'Consent & declaration forms signed',
-        'Enterprise pre-existence validated (photos, product samples)',
-        'Portal enrollment completed (if govt)'
-      ],
-      evidence: [
-        'Aadhaar copy filed',
-        'Bank passbook / cancelled cheque copy filed',
-        'Consent forms filed',
-        'Enterprise pre-existence photos archived',
-        'Portal enrollment screenshot saved'
-      ]
-    },
-    adapters: {
-      govt: ['All learner details uploaded and verified on SID', 'Center verified on portal'],
-      csr: [],
-      paid: []
-    }
-  },
-
-  kickOff: {
-    id: 'kick-off', title: 'Batch Kick-Off', blStage: 'BL-3', owner: 'Program Manager + Center Coordinator',
-    q: 'Can an auditor reconstruct Day 1 exactly?',
-    weekOffset: 0, // week 1
-    items: {
-      execution: [
-        'Day-1 ceremony conducted',
-        'Branding photos taken (classroom, banner, group photo)',
-        'Biometric dry-run completed (all devices working)',
-        'Trainer-learner mapping documented',
-        'Batch activation confirmed on SID (if govt)',
-        'Baseline capture completed (income, channels, pricing habits)',
-        'WhatsApp group created',
-        'Code of conduct shared and acknowledged',
-        'Tools check done (smartphones, UPI, printer/scanner)'
-      ],
-      evidence: [
-        'Day-1 ceremony photos archived (geo-tagged)',
-        'Biometric test log saved',
-        'Baseline survey responses filed',
-        'SID batch activation screenshot saved'
-      ]
-    },
-    adapters: { govt: [], csr: [], paid: [] }
-  },
-
-  delivery: {
-    id: 'delivery', title: 'Training Delivery', blStage: 'BL-4', owner: 'Trainer + Center Coordinator',
-    q: 'Can I defend every class conducted?',
-    // This spans multiple weeks — handled specially
-    items: {
-      daily: [
-        'Biometric attendance captured (+ manual fallback)',
-        'Session conducted as per curriculum plan',
-        'Learner artifacts produced (per weekly plan)'
-      ],
-      weekly: [
-        'Attendance rate reviewed (flag if < 80%)',
-        'Equipment usage verified',
-        'Internal review note written',
-        'Evidence folder up to date'
-      ],
-      qaPlan: [
-        { week: 2, items: ['Attendance trend acceptable', 'First artifact complete per learner', 'Drop-off risk identified → intervention'] },
-        { week: 4, items: ['Digital presence verified (catalog live?)', 'Trainer substitution log (if any)', 'Equipment issues escalated'] }
-      ],
-      substitution: [
-        'Backup trainer pre-approved',
-        'Handover notes prepared',
-        'Learners informed',
-        'Attendance continues uninterrupted'
-      ]
-    },
-    adapters: {
-      govt: [
-        'Aadhaar biometric attendance captured daily',
-        'Backup biometric device available',
-        'Attendance fallback protocol documented',
-        'SID attendance sync verified weekly',
-        'Skill India branding visible in all class photos'
-      ],
-      csr: [
-        'Sponsor updates sent at agreed cadence',
-        'Photo evidence per sponsor requirements',
-        'Safeguarding protocols followed',
-        'Sample evidence collected for mid-term report'
-      ],
-      paid: [
-        'Payment status tracked per learner',
-        'Satisfaction check-in at Week 2',
-        'Value front-loading (tangible outcomes in first 2 weeks)',
-        'NPS / satisfaction pulse at Week 4'
-      ]
-    }
-  },
-
-  assessment: {
-    id: 'assessment', title: 'Assessment Readiness', blStage: 'BL-5', owner: 'Assessment Lead',
-    q: 'Who is likely to fail, and why?',
-    weekOffsetFromEnd: -2, // 2 weeks before end
-    items: {
-      decision: [
-        'Mock pass rate ≥ 70%? (If not, escalate)',
-        'All candidates have complete document files',
-        'Assessment agency confirmed dates and logistics'
-      ],
-      execution: [
-        'Mock assessment conducted (non-negotiable)',
-        'Mock results documented per candidate',
-        'Remedial action plan for at-risk candidates',
-        'Extra coaching sessions scheduled (if needed)',
-        'Assessment agency coordination complete',
-        'Candidate readiness declaration signed',
-        'All candidate photos, IDs, and artifacts ready'
-      ],
-      evidence: [
-        'Mock assessment scores filed',
-        'Remedial action log filed',
-        'Assessment agency confirmation saved',
-        'Candidate readiness declarations filed'
-      ]
-    },
-    adapters: {
-      govt: [
-        'Third-party assessment agency engaged via SSC/NSDC',
-        'Assessor travel and logistics confirmed',
-        'Assessment result uploaded to portal'
-      ],
-      csr: [],
-      paid: []
-    }
-  },
-
-  closure: {
-    id: 'closure', title: 'Certification & Closure', blStage: 'BL-6', owner: 'Documentation Officer + Program Manager',
-    q: 'Is anything left unuploaded or unverified?',
-    weekOffsetFromEnd: 0, // last week
-    items: {
-      execution: [
-        'Assessment completed (all candidates assessed)',
-        'Assessment results received from agency',
-        'Certificates issued to all passing candidates',
-        'Certificate receipt acknowledgment collected',
-        'Final attendance reconciliation (portal vs actual)',
-        'Batch closure completed on portal (if govt)',
-        'Feedback survey collected from all learners',
-        'Testimonials captured (3–5 minimum)',
-        'All physical documents filed and organized',
-        'Digital evidence archive complete and backed up'
-      ],
-      evidence: [
-        'Assessment result sheet filed',
-        'Certificate distribution register filed',
-        'Final attendance register reconciled and filed',
-        'Portal closure screenshot saved',
-        'Feedback survey responses compiled',
-        'Testimonial files archived'
-      ]
-    },
-    adapters: {
-      govt: [
-        'Batch closed on SID portal',
-        'Certificate issued via SSC',
-        'Final attendance reconciliation: portal vs register'
-      ],
-      csr: [
-        'Sponsor interim report submitted',
-        'Success stories captured (3–5 with photos)',
-        'Before/after comparison data compiled'
-      ],
-      paid: [
-        'Completion certificates issued (your brand)',
-        'NPS survey collected',
-        'Testimonial capture (for marketing)',
-        'Alumni club / WhatsApp group activated',
-        'Upsell offered (advanced module, mentorship)'
-      ]
-    }
-  },
-
-  livelihood: {
-    id: 'livelihood', title: 'Livelihood & Follow-Up', blStage: 'BL-7', owner: 'Documentation Officer',
-    q: 'Can I prove income?',
-    // Post-batch — Day 30, 60, 90
-    items: {
-      day30: [
-        'Follow-up call completed for each learner',
-        'WhatsApp catalog still active? (screenshot)',
-        'At least 1 sales transaction or inquiry (evidence)',
-        'Learners needing support identified → intervention'
-      ],
-      day60: [
-        'Follow-up call completed',
-        'Income proxy collected (orders/month, UPI, repeat customers)',
-        'Udyam certificate obtained (or in progress)',
-        'Geo-tagged photos taken (if applicable)'
-      ],
-      day90: [
-        'Final follow-up completed',
-        'Success story / testimonial captured',
-        'Peer mentoring connection made',
-        'Referral captured (for next batch)',
-        'Income evidence compiled into proof pack'
-      ],
-      evidencePack: [
-        'Udyam certificates',
-        'Digital storefront screenshots',
-        'Income proxy documents (UPI, bank, order threads)',
-        'Geo-tagged photos',
-        'Testimonials / success stories',
-        'Before/after income comparison'
-      ]
-    },
-    adapters: {
-      govt: [
-        'Tranche-3: livelihood evidence uploaded to portal',
-        'Tranche-3: self-declaration by learners',
-        'Tranche-3 submission prepared'
-      ],
-      csr: [
-        'Full impact report drafted',
-        'Quantitative: trained, completed, certified, income change',
-        'Qualitative: testimonials, case studies, photos',
-        'Sustainability narrative',
-        'Report submitted to sponsor'
-      ],
-      paid: [
-        'Referral program activated',
-        'Repeat purchase tracking',
-        'Testimonials published (website, social media)',
-        'Case studies created for future marketing'
-      ]
-    }
-  }
-};
-
-
-// ===== LOAD COURSES =====
-async function loadCourses() {
+// ===== LOAD DATA =====
+async function loadAll() {
+  // Load courses
   try {
-    const catalogRes = await fetch('data/catalog.json');
-    const catalog = await catalogRes.json();
+    const catRes = await fetch('data/courses/catalog.json');
+    const catalog = await catRes.json();
     const sel = document.getElementById('f-course');
     sel.innerHTML = '<option value="">— Select a course —</option>';
     for (const file of catalog) {
-      const res = await fetch('data/' + file);
+      const res = await fetch('data/courses/' + file);
       const c = await res.json();
       courses.push(c);
       const opt = document.createElement('option');
@@ -422,6 +125,23 @@ async function loadCourses() {
     console.error('Failed to load courses:', e);
     document.getElementById('f-course').innerHTML = '<option value="">Error loading courses</option>';
   }
+
+  // Load stage checklists
+  for (const file of STAGE_FILES) {
+    try {
+      const res = await fetch('data/checklists/' + file);
+      stages.push(await res.json());
+    } catch(e) { console.error('Failed to load ' + file, e); }
+  }
+
+  // Load adapters
+  for (const file of ADAPTER_FILES) {
+    try {
+      const res = await fetch('data/checklists/' + file);
+      const a = await res.json();
+      adapters[a.id] = a;
+    } catch(e) { console.error('Failed to load ' + file, e); }
+  }
 }
 
 // ===== HELPERS =====
@@ -432,8 +152,7 @@ function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); retu
 function addWeeks(d, n) { return addDays(d, n * 7); }
 function weekRange(start, weekNum) {
   const s = addWeeks(start, weekNum);
-  const e = addDays(s, 6);
-  return fmt(s) + ' – ' + fmt(e);
+  return fmt(s) + ' – ' + fmt(addDays(s, 6));
 }
 
 function genBatchName(course, startDate, tags) {
@@ -442,9 +161,7 @@ function genBatchName(course, startDate, tags) {
   const mon = d.toLocaleString('en', { month:'short' }).toUpperCase();
   const yr = d.getFullYear().toString().slice(-2);
   let name = course.shortName + '-' + mon + yr;
-  if (tags && tags.trim()) {
-    name += '-' + tags.trim().replace(/\s+/g, '-').toLowerCase();
-  }
+  if (tags && tags.trim()) name += '-' + tags.trim().replace(/\s+/g, '-').toLowerCase();
   return name;
 }
 
@@ -456,45 +173,46 @@ function getSelectedFunding() {
   return f;
 }
 
-// ===== RENDER =====
-function renderItems(items, adapters, funding) {
-  let html = '<ul class="rb-items">';
-  for (const item of items) {
-    html += '<li>' + item + '</li>';
-  }
-  // Adapter items
+// Resolve dotted path like "evidenceArtifacts.baseline" from course object
+function resolvePath(obj, path) {
+  return path.split('.').reduce((o, k) => (o && o[k] !== undefined) ? o[k] : [], obj);
+}
+
+// ===== RENDER HELPERS =====
+function renderListItems(items) {
+  return items.map(i => '<li>' + i + '</li>').join('');
+}
+
+function renderAdapterItems(stageId, funding) {
+  let html = '';
   for (const f of funding) {
-    const adapterItems = adapters[f] || [];
-    const label = f.charAt(0).toUpperCase() + f.slice(1);
-    for (const item of adapterItems) {
-      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + label + '</span>' + item + '</li>';
+    const adapter = adapters[f];
+    if (!adapter) continue;
+    const items = adapter.stages[stageId] || [];
+    for (const item of items) {
+      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + adapter.label + '</span>' + item + '</li>';
     }
   }
-  html += '</ul>';
   return html;
 }
 
 function renderSection(title, items) {
   if (!items || items.length === 0) return '';
-  let html = '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">';
-  for (const item of items) html += '<li>' + item + '</li>';
-  html += '</ul></div>';
-  return html;
+  return '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">' + renderListItems(items) + '</ul></div>';
 }
 
-function renderAdapterItems(adapters, funding) {
-  let html = '';
-  for (const f of funding) {
-    const items = adapters[f] || [];
-    if (items.length === 0) continue;
-    const label = f.charAt(0).toUpperCase() + f.slice(1);
-    for (const item of items) {
-      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + label + '</span>' + item + '</li>';
-    }
+function renderCourseSpecific(spec, course) {
+  if (!spec || !spec.show) return '';
+  let items = [];
+  for (const field of spec.fields) {
+    const vals = resolvePath(course, field);
+    if (Array.isArray(vals)) items = items.concat(vals);
   }
-  return html;
+  if (items.length === 0) return '';
+  return renderSection(spec.title, items);
 }
 
+// ===== MAIN RENDER =====
 function renderRunbook() {
   const courseId = document.getElementById('f-course').value;
   const startStr = document.getElementById('f-start').value;
@@ -510,212 +228,117 @@ function renderRunbook() {
     return;
   }
 
-  // Update batch name
   const startDate = new Date(startStr);
+  const dur = course.durationWeeks;
+  const endDate = addWeeks(startDate, dur);
   document.getElementById('f-name').value = genBatchName(course, startStr, tags);
 
-  // Show course info
+  // Course info bar
   const info = document.getElementById('course-info');
   info.style.display = 'block';
-  info.innerHTML = '<span><strong>Duration:</strong> ' + course.durationWeeks + ' weeks</span>'
+  info.innerHTML = '<span><strong>Duration:</strong> ' + dur + ' weeks</span>'
     + '<span><strong>NSQF:</strong> Level ' + course.nsqfLevel + '</span>'
     + '<span><strong>Job Role:</strong> ' + course.jobRole + '</span>'
     + '<span><strong>SSC:</strong> ' + course.ssc + '</span>';
 
-  const endDate = addWeeks(startDate, course.durationWeeks);
-  const dur = course.durationWeeks;
   let html = '';
 
-  // ----- PRE-BATCH (Week -2 to -1) -----
-  const pb = BL.preBatch;
-  html += '<div class="rb-phase" id="rb-' + pb.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + pb.blStage + ': ' + pb.title + '</h2>';
-  html += '<span class="rb-dates">' + weekRange(startDate, -2) + '</span>';
-  html += '<span class="rb-owner">' + pb.owner + '</span></div>';
-  html += '<div class="rb-q">' + pb.q + '</div>';
-  html += '<div class="rb-section"><h3>Decision (Go / No-Go)</h3><ul class="rb-items">';
-  for (const i of pb.items.decision) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
-  for (const i of pb.items.execution) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(pb.adapters, funding);
-  html += '</ul></div>';
-  // Course-specific: equipment + trainer + enrollment criteria
-  html += '<div class="rb-section"><h3>Course-Specific Setup</h3><ul class="rb-items">';
-  for (const eq of course.equipmentNeeded) html += '<li>Equipment: ' + eq + '</li>';
-  for (const tp of course.trainerPrereqs) html += '<li>Trainer: ' + tp + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
-  for (const i of pb.items.evidence) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
+  for (const stage of stages) {
+    // --- Determine date range for this stage ---
+    let dateStr = '';
 
-  // ----- MOBILIZE (Week -1) -----
-  const mob = BL.mobilize;
-  html += '<div class="rb-phase" id="rb-' + mob.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + mob.blStage + ': ' + mob.title + '</h2>';
-  html += '<span class="rb-dates">' + weekRange(startDate, -1) + '</span>';
-  html += '<span class="rb-owner">' + mob.owner + '</span></div>';
-  html += '<div class="rb-q">' + mob.q + '</div>';
-  html += '<div class="rb-section"><h3>Decision</h3><ul class="rb-items">';
-  for (const i of mob.items.decision) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
-  for (const i of mob.items.execution) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(mob.adapters, funding);
-  html += '</ul></div>';
-  // Enrollment criteria from course
-  html += '<div class="rb-section"><h3>Enrollment Criteria (from course design)</h3><ul class="rb-items">';
-  for (const ec of course.enrollmentCriteria) html += '<li>' + ec + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
-  for (const i of mob.items.evidence) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
-
-  // ----- KICK-OFF (Week 1) -----
-  const ko = BL.kickOff;
-  html += '<div class="rb-phase" id="rb-' + ko.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + ko.blStage + ': ' + ko.title + '</h2>';
-  html += '<span class="rb-dates">' + weekRange(startDate, 0) + '</span>';
-  html += '<span class="rb-owner">' + ko.owner + '</span></div>';
-  html += '<div class="rb-q">' + ko.q + '</div>';
-  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
-  for (const i of ko.items.execution) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-  // Baseline from course evidence
-  html += '<div class="rb-section"><h3>Baseline Capture</h3><ul class="rb-items">';
-  for (const b of course.evidenceArtifacts.baseline) html += '<li>' + b + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
-  for (const i of ko.items.evidence) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
-
-  // ----- DELIVERY (Week 1 through N-2) — Per-week view -----
-  const del = BL.delivery;
-  html += '<div class="rb-phase" id="rb-' + del.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + del.blStage + ': ' + del.title + '</h2>';
-  html += '<span class="rb-dates">' + fmt(startDate) + ' – ' + fmt(addWeeks(startDate, dur - 2)) + '</span>';
-  html += '<span class="rb-owner">' + del.owner + '</span></div>';
-  html += '<div class="rb-q">' + del.q + '</div>';
-
-  // Daily + weekly recurring
-  html += '<div class="rb-section"><h3>Daily (every class day)</h3><ul class="rb-items">';
-  for (const i of del.items.daily) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(del.adapters, funding);
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Weekly (every week)</h3><ul class="rb-items">';
-  for (const i of del.items.weekly) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-
-  // Per-week modules from course
-  const deliveryWeeks = Math.max(dur - 2, dur); // show all module weeks
-  for (let w = 0; w < course.modules.length; w++) {
-    const mod = course.modules[w];
-    html += '<div class="rb-section"><h3><span class="rb-week-title">Week ' + mod.week + ':</span> ' + mod.title;
-    html += ' <span class="rb-dates">(' + weekRange(startDate, w) + ')</span></h3>';
-    html += '<ul class="rb-items">';
-    for (const a of mod.artifacts) html += '<li>Artifact: ' + a + '</li>';
-
-    // QA checkpoints
-    for (const qa of del.items.qaPlan) {
-      if (qa.week === mod.week) {
-        html += '<li style="font-weight:600; color:var(--stage-ops);">⚑ QA Checkpoint</li>';
-        for (const qi of qa.items) html += '<li>' + qi + '</li>';
-      }
+    if (stage.spanType === 'delivery') {
+      dateStr = fmt(startDate) + ' – ' + fmt(addWeeks(startDate, dur - 2));
+    } else if (stage.spanType === 'post-batch') {
+      dateStr = fmt(endDate) + ' – ' + fmt(addDays(endDate, 90));
+    } else if (stage.weekOffset !== undefined) {
+      dateStr = weekRange(startDate, stage.weekOffset);
+    } else if (stage.weekOffsetFromEnd !== undefined) {
+      dateStr = weekRange(startDate, dur + stage.weekOffsetFromEnd);
     }
-    html += '</ul></div>';
+
+    // --- Phase header ---
+    html += '<div class="rb-phase" id="rb-' + stage.id + '">';
+    html += '<div class="rb-phase-hdr"><h2>' + stage.blStage + ': ' + stage.title + '</h2>';
+    html += '<span class="rb-dates">' + dateStr + '</span>';
+    html += '<span class="rb-owner">' + stage.owner + '</span></div>';
+    html += '<div class="rb-q">' + stage.coreQuestion + '</div>';
+
+    // --- DELIVERY is special: has daily/weekly + per-week modules + QA ---
+    if (stage.spanType === 'delivery') {
+      // Sections from JSON
+      for (const [key, sec] of Object.entries(stage.sections)) {
+        html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">';
+        html += renderListItems(sec.items);
+        if (key === 'daily') html += renderAdapterItems(stage.id, funding);
+        html += '</ul></div>';
+      }
+      // Per-week modules from course
+      for (let w = 0; w < course.modules.length; w++) {
+        const mod = course.modules[w];
+        html += '<div class="rb-section"><h3><span class="rb-week-title">Week ' + mod.week + ':</span> ' + mod.title;
+        html += ' <span class="rb-dates">(' + weekRange(startDate, w) + ')</span></h3>';
+        html += '<ul class="rb-items">';
+        for (const a of mod.artifacts) html += '<li>Artifact: ' + a + '</li>';
+        // QA checkpoints from JSON
+        if (stage.qaCheckpoints) {
+          for (const qa of stage.qaCheckpoints) {
+            if (qa.week === mod.week) {
+              html += '<li style="font-weight:600; color:var(--stage-ops);">⚑ QA Checkpoint</li>';
+              html += renderListItems(qa.items);
+            }
+          }
+        }
+        html += '</ul></div>';
+      }
+
+    // --- LIVELIHOOD is special: has day30/60/90 with computed dates ---
+    } else if (stage.spanType === 'post-batch') {
+      const dayLabels = { day30: 30, day60: 60, day90: 90 };
+      for (const [key, sec] of Object.entries(stage.sections)) {
+        let title = sec.title;
+        if (dayLabels[key]) title += ' (' + fmt(addDays(endDate, dayLabels[key])) + ')';
+        html += '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">';
+        html += renderListItems(sec.items);
+        if (key === 'day90') html += renderAdapterItems(stage.id, funding);
+        html += '</ul></div>';
+      }
+      html += renderCourseSpecific(stage.courseSpecific, course);
+
+    // --- STANDARD STAGES: render sections + adapters + course-specific ---
+    } else {
+      const sectionKeys = Object.keys(stage.sections);
+      for (const key of sectionKeys) {
+        const sec = stage.sections[key];
+        html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">';
+        html += renderListItems(sec.items);
+        // Add adapter items after the main execution section (second section, or only non-evidence section)
+        if (key === 'execution' || (key === sectionKeys[Math.min(1, sectionKeys.length - 1)] && key !== 'evidence')) {
+          html += renderAdapterItems(stage.id, funding);
+        }
+        html += '</ul></div>';
+      }
+      html += renderCourseSpecific(stage.courseSpecific, course);
+    }
+
+    html += '</div>'; // close rb-phase
   }
-
-  // Substitution protocol
-  html += '<div class="rb-section"><h3>Trainer Substitution Protocol</h3><ul class="rb-items">';
-  for (const i of del.items.substitution) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
-
-  // ----- ASSESSMENT (Week N-2) -----
-  const asmtWeek = dur - 2;
-  const asmt = BL.assessment;
-  html += '<div class="rb-phase" id="rb-' + asmt.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + asmt.blStage + ': ' + asmt.title + '</h2>';
-  html += '<span class="rb-dates">' + weekRange(startDate, asmtWeek) + '</span>';
-  html += '<span class="rb-owner">' + asmt.owner + '</span></div>';
-  html += '<div class="rb-q">' + asmt.q + '</div>';
-  html += '<div class="rb-section"><h3>Decision</h3><ul class="rb-items">';
-  for (const i of asmt.items.decision) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
-  for (const i of asmt.items.execution) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(asmt.adapters, funding);
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Evidence</h3><ul class="rb-items">';
-  for (const i of asmt.items.evidence) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
-
-  // ----- CLOSURE (Last week) -----
-  const closureWeek = dur - 1;
-  const cl = BL.closure;
-  html += '<div class="rb-phase" id="rb-' + cl.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + cl.blStage + ': ' + cl.title + '</h2>';
-  html += '<span class="rb-dates">' + weekRange(startDate, closureWeek) + '</span>';
-  html += '<span class="rb-owner">' + cl.owner + '</span></div>';
-  html += '<div class="rb-q">' + cl.q + '</div>';
-  html += '<div class="rb-section"><h3>Execution</h3><ul class="rb-items">';
-  for (const i of cl.items.execution) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(cl.adapters, funding);
-  html += '</ul></div>';
-  // End-course evidence from course
-  html += '<div class="rb-section"><h3>End-Course Evidence</h3><ul class="rb-items">';
-  for (const e of course.evidenceArtifacts.endCourse) html += '<li>' + e + '</li>';
-  html += '</ul></div>';
-  html += '<div class="rb-section"><h3>Archive Evidence</h3><ul class="rb-items">';
-  for (const i of cl.items.evidence) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
-
-  // ----- LIVELIHOOD (Day 30 / 60 / 90) -----
-  const lv = BL.livelihood;
-  html += '<div class="rb-phase" id="rb-' + lv.id + '">';
-  html += '<div class="rb-phase-hdr"><h2>' + lv.blStage + ': ' + lv.title + '</h2>';
-  html += '<span class="rb-dates">' + fmt(endDate) + ' – ' + fmt(addDays(endDate, 90)) + '</span>';
-  html += '<span class="rb-owner">' + lv.owner + '</span></div>';
-  html += '<div class="rb-q">' + lv.q + '</div>';
-
-  html += '<div class="rb-section"><h3>Day 30 (' + fmt(addDays(endDate, 30)) + ')</h3><ul class="rb-items">';
-  for (const i of lv.items.day30) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-
-  html += '<div class="rb-section"><h3>Day 60 (' + fmt(addDays(endDate, 60)) + ')</h3><ul class="rb-items">';
-  for (const i of lv.items.day60) html += '<li>' + i + '</li>';
-  html += '</ul></div>';
-
-  html += '<div class="rb-section"><h3>Day 90 (' + fmt(addDays(endDate, 90)) + ')</h3><ul class="rb-items">';
-  for (const i of lv.items.day90) html += '<li>' + i + '</li>';
-  html += renderAdapterItems(lv.adapters, funding);
-  html += '</ul></div>';
-
-  // Post-course evidence from course
-  html += '<div class="rb-section"><h3>Post-Course Evidence (from course design)</h3><ul class="rb-items">';
-  for (const e of course.evidenceArtifacts.postCourse) html += '<li>' + e + '</li>';
-  html += '</ul></div>';
-
-  html += '<div class="rb-section"><h3>Evidence Pack (Final)</h3><ul class="rb-items">';
-  for (const i of lv.items.evidencePack) html += '<li>' + i + '</li>';
-  html += '</ul></div></div>';
 
   container.innerHTML = html;
 }
 
-
-// ===== WIRE UP =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadCourses();
+  await loadAll();
 
-  // Set default start date to next Monday
+  // Default start date: next Monday
   const today = new Date();
   const nextMon = new Date(today);
   nextMon.setDate(today.getDate() + ((8 - today.getDay()) % 7 || 7));
   document.getElementById('f-start').value = nextMon.toISOString().split('T')[0];
 
-  // Bind all form changes
-  const inputs = ['f-course', 'f-start', 'f-tags', 'f-govt', 'f-csr', 'f-paid'];
-  for (const id of inputs) {
+  // Bind form changes
+  for (const id of ['f-course', 'f-start', 'f-tags', 'f-govt', 'f-csr', 'f-paid']) {
     document.getElementById(id).addEventListener('change', renderRunbook);
     document.getElementById(id).addEventListener('input', renderRunbook);
   }

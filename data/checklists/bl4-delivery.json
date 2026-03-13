@@ -1,0 +1,40 @@
+{
+  "id": "delivery",
+  "blStage": "BL-4",
+  "title": "Training Delivery",
+  "owner": "Trainer + Center Coordinator",
+  "coreQuestion": "Can I defend every class conducted?",
+  "spanType": "delivery",
+  "sections": {
+    "daily": {
+      "title": "Daily (every class day)",
+      "items": [
+        "Biometric attendance captured (+ manual fallback)",
+        "Session conducted as per curriculum plan",
+        "Learner artifacts produced (per weekly plan)"
+      ]
+    },
+    "weekly": {
+      "title": "Weekly (every week)",
+      "items": [
+        "Attendance rate reviewed (flag if < 80%)",
+        "Equipment usage verified",
+        "Internal review note written",
+        "Evidence folder up to date"
+      ]
+    },
+    "substitution": {
+      "title": "Trainer Substitution Protocol",
+      "items": [
+        "Backup trainer pre-approved",
+        "Handover notes prepared",
+        "Learners informed",
+        "Attendance continues uninterrupted"
+      ]
+    }
+  },
+  "qaCheckpoints": [
+    { "week": 2, "items": ["Attendance trend acceptable", "First artifact complete per learner", "Drop-off risk identified → intervention"] },
+    { "week": 4, "items": ["Digital presence verified (catalog live?)", "Trainer substitution log (if any)", "Equipment issues escalated"] }
+  ]
+}

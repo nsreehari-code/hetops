@@ -1,0 +1,46 @@
+{
+  "id": "mobilize",
+  "blStage": "BL-2",
+  "title": "Mobilization & Enrollment",
+  "owner": "Program Manager + Center Coordinator",
+  "coreQuestion": "Will these candidates pass portal + assessment + livelihood proof?",
+  "weekOffset": -1,
+  "sections": {
+    "decision": {
+      "title": "Decision",
+      "items": [
+        "Each candidate meets scheme eligibility criteria",
+        "Pre-existing enterprise validated (for entrepreneur courses)",
+        "Each candidate can realistically pass assessment"
+      ]
+    },
+    "execution": {
+      "title": "Execution",
+      "items": [
+        "Aadhaar copy collected and verified",
+        "Bank account verified (in candidate's name)",
+        "Mobile number linked to Aadhaar",
+        "Aadhaar–mobile–bank linkage confirmed",
+        "Age eligibility verified",
+        "Consent & declaration forms signed",
+        "Enterprise pre-existence validated (photos, product samples)",
+        "Portal enrollment completed (if govt)"
+      ]
+    },
+    "evidence": {
+      "title": "Evidence",
+      "items": [
+        "Aadhaar copy filed",
+        "Bank passbook / cancelled cheque copy filed",
+        "Consent forms filed",
+        "Enterprise pre-existence photos archived",
+        "Portal enrollment screenshot saved"
+      ]
+    }
+  },
+  "courseSpecific": {
+    "show": true,
+    "title": "Enrollment Criteria (from course design)",
+    "fields": ["enrollmentCriteria"]
+  }
+}

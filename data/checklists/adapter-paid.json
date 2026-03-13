@@ -1,0 +1,36 @@
+{
+  "id": "paid",
+  "name": "Paid Training",
+  "label": "Paid",
+  "stages": {
+    "pre-batch": [
+      "Pricing finalized (fee structure, installment options)",
+      "Refund policy published",
+      "Payment collection method set up (UPI, bank, online)",
+      "Scholarship slots defined (if any)",
+      "Marketing materials created (flyer, WhatsApp, social)"
+    ],
+    "mobilize": [],
+    "kick-off": [],
+    "delivery": [
+      "Payment status tracked per learner",
+      "Satisfaction check-in at Week 2",
+      "Value front-loading (tangible outcomes in first 2 weeks)",
+      "NPS / satisfaction pulse at Week 4"
+    ],
+    "assessment": [],
+    "closure": [
+      "Completion certificates issued (your brand)",
+      "NPS survey collected",
+      "Testimonial capture (for marketing)",
+      "Alumni club / WhatsApp group activated",
+      "Upsell offered (advanced module, mentorship)"
+    ],
+    "livelihood": [
+      "Referral program activated",
+      "Repeat purchase tracking",
+      "Testimonials published (website, social media)",
+      "Case studies created for future marketing"
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "pre-batch",
+  "blStage": "BL-1",
+  "title": "Pre-Batch Setup",
+  "owner": "Program Manager",
+  "coreQuestion": "If I open this batch today, can I survive till Tranche-3?",
+  "weekOffset": -2,
+  "sections": {
+    "decision": {
+      "title": "Decision (Go / No-Go)",
+      "items": [
+        "Is the scheme eligible for this course? (PMKVY / SSDM / NULM / CSR / Paid)",
+        "Can we self-finance until Tranche-1 arrives?",
+        "Is there a credible mobilization pipeline for this geography?"
+      ]
+    },
+    "execution": {
+      "title": "Execution",
+      "items": [
+        "Center geo-tagged and registered on SID (if govt)",
+        "Center branding complete (Skill India banners, photos taken)",
+        "Biometric devices available and tested",
+        "Internet connection stable",
+        "Equipment mapped to job role available",
+        "Trainer assigned with valid ToT certification",
+        "District Skill Committee contacted / comfort note obtained"
+      ]
+    },
+    "evidence": {
+      "title": "Evidence",
+      "items": [
+        "Center photos (exterior, classroom, branding) archived",
+        "Trainer ToT certificate copy filed",
+        "Scheme eligibility confirmation documented",
+        "Cash flow projection saved"
+      ]
+    }
+  },
+  "courseSpecific": {
+    "show": true,
+    "title": "Course-Specific Setup",
+    "fields": ["equipmentNeeded", "trainerPrereqs"]
+  }
+}

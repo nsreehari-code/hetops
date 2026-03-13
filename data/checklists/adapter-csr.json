@@ -1,0 +1,35 @@
+{
+  "id": "csr",
+  "name": "CSR",
+  "label": "CSR",
+  "stages": {
+    "pre-batch": [
+      "MOU signed with sponsor (scope, KPIs, reporting cadence)",
+      "Safeguarding policy acknowledged",
+      "Sponsor reporting template confirmed",
+      "Baseline data fields aligned with sponsor KPIs",
+      "Brand guidelines confirmed (logo placement, messaging)"
+    ],
+    "mobilize": [],
+    "kick-off": [],
+    "delivery": [
+      "Sponsor updates sent at agreed cadence",
+      "Photo evidence per sponsor requirements",
+      "Safeguarding protocols followed",
+      "Sample evidence collected for mid-term report"
+    ],
+    "assessment": [],
+    "closure": [
+      "Sponsor interim report submitted",
+      "Success stories captured (3–5 with photos)",
+      "Before/after comparison data compiled"
+    ],
+    "livelihood": [
+      "Full impact report drafted",
+      "Quantitative: trained, completed, certified, income change",
+      "Qualitative: testimonials, case studies, photos",
+      "Sustainability narrative",
+      "Report submitted to sponsor"
+    ]
+  }
+}

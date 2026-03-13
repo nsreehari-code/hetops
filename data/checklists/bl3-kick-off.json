@@ -1,0 +1,38 @@
+{
+  "id": "kick-off",
+  "blStage": "BL-3",
+  "title": "Batch Kick-Off",
+  "owner": "Program Manager + Center Coordinator",
+  "coreQuestion": "Can an auditor reconstruct Day 1 exactly?",
+  "weekOffset": 0,
+  "sections": {
+    "execution": {
+      "title": "Execution",
+      "items": [
+        "Day-1 ceremony conducted",
+        "Branding photos taken (classroom, banner, group photo)",
+        "Biometric dry-run completed (all devices working, all candidates enrolled)",
+        "Trainer-learner mapping documented",
+        "Batch activation confirmed on SID (if govt)",
+        "Baseline capture completed (income range, current channels, pricing habits)",
+        "WhatsApp group created",
+        "Code of conduct shared and acknowledged",
+        "Tools check done (smartphones, UPI, printer/scanner)"
+      ]
+    },
+    "evidence": {
+      "title": "Evidence",
+      "items": [
+        "Day-1 ceremony photos archived (geo-tagged)",
+        "Biometric test log saved",
+        "Baseline survey responses filed",
+        "SID batch activation screenshot saved"
+      ]
+    }
+  },
+  "courseSpecific": {
+    "show": true,
+    "title": "Baseline Capture",
+    "fields": ["evidenceArtifacts.baseline"]
+  }
+}

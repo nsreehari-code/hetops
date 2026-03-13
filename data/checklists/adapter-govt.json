@@ -1,0 +1,41 @@
+{
+  "id": "govt",
+  "name": "Government",
+  "label": "Govt",
+  "stages": {
+    "pre-batch": [
+      "TP registration active on SID",
+      "Training Center geo-tagged and verified on SID",
+      "Trainer mapped to job role on SID with valid ToT",
+      "Scheme eligibility confirmed (PMKVY / SSDM / DDU-GKY / NULM)",
+      "Batch created on SID (any error blocks payment)"
+    ],
+    "mobilize": [
+      "All learner details uploaded and verified on SID",
+      "Center verified on portal"
+    ],
+    "kick-off": [],
+    "delivery": [
+      "Aadhaar biometric attendance captured daily",
+      "Backup biometric device available",
+      "Attendance fallback protocol documented",
+      "SID attendance sync verified weekly",
+      "Skill India branding visible in all class photos"
+    ],
+    "assessment": [
+      "Third-party assessment agency engaged via SSC/NSDC",
+      "Assessor travel and logistics confirmed",
+      "Assessment result uploaded to portal"
+    ],
+    "closure": [
+      "Batch closed on SID portal",
+      "Certificate issued via SSC",
+      "Final attendance reconciliation: portal vs register"
+    ],
+    "livelihood": [
+      "Tranche-3: livelihood evidence uploaded to portal",
+      "Tranche-3: self-declaration by learners",
+      "Tranche-3 submission prepared"
+    ]
+  }
+}

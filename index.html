@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HET Skilling OS — Execution Map</title>
+  <title>HET Skilling OS — Batch Lifecycle</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <nav>
   <span class="site-id">hetops</span>
-  <a href="index.html" class="active">Execution Map</a>
-  <a href="batch-lifecycle/index.html">Batch Lifecycle</a>
+  <a href="index.html" class="active">Batch Lifecycle</a>
   <a href="templates/index.html">Templates</a>
   <a href="checklists/index.html">Checklists</a>
   <a href="evidence-spines/index.html">Evidence Spines</a>
   <a href="adapters/index.html">Adapters</a>
+  <a href="roles.html">Roles</a>
   <a href="records/index.html">Decision Records</a>
   <a href="how-to-use.html">How to Use</a>
 </nav>
 
-<h1>HET Skilling OS — Execution Map</h1>
-<p class="subtitle">The operational half. How batches get run, defended, and proven. Strategy lives in <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs</a>.</p>
+<h1>HET Skilling OS — Batch Lifecycle</h1>
+<p class="subtitle">The repeating unit of skilling. Every batch goes through these 7 stages. Course design is already done — this is where execution happens.</p>
 
 <div class="md-content" style="background:var(--accent-light); border-color:var(--accent); font-size:0.9rem; padding:1rem 1.25rem; margin-bottom:1.5rem;">
   <strong>Thumbrule:</strong> If you're <em>doing</em>, it belongs here. If you're <em>deciding</em>, it belongs in <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs</a>.<br>
@@ -29,66 +29,85 @@
   <a href="how-to-use.html">Full guide with examples →</a>
 </div>
 
-<!-- 8-Stage Flow -->
-<h2>The Lifecycle</h2>
+<!-- 7-Stage Batch Lifecycle Flow -->
+<h2>The 7 Stages</h2>
 <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem">
-  <span class="chip exec">Strategy</span> stages 1–3 are owned by <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs</a>.
-  <span class="chip ops">Execution</span> stages 4–8 are owned here.
+  Each stage has a micro-pack: decision checklist, execution checklist, evidence checklist, clear owner.
 </p>
 
 <div class="os-flow">
-  <a href="https://nsreehari-code.github.io/hetexecs/os/1-ideate.html" class="flow-item exec"><span class="num">Stage 1</span>Ideate</a>
-  <a href="https://nsreehari-code.github.io/hetexecs/os/2-qualify.html" class="flow-item exec"><span class="num">Stage 2</span>Qualify</a>
-  <a href="https://nsreehari-code.github.io/hetexecs/os/3-design.html" class="flow-item exec"><span class="num">Stage 3</span>Design</a>
-  <a href="os/4-package.html" class="flow-item ops"><span class="num">Stage 4</span>Package</a>
-  <a href="os/5-launch.html" class="flow-item ops"><span class="num">Stage 5</span>Launch</a>
-  <a href="os/6-deliver.html" class="flow-item ops"><span class="num">Stage 6</span>Deliver</a>
-  <a href="os/7-certify.html" class="flow-item ops"><span class="num">Stage 7</span>Certify</a>
-  <a href="os/8-outcome-track.html" class="flow-item ops"><span class="num">Stage 8</span>Outcome Track</a>
+  <a href="batch-lifecycle/1-pre-auth.html" class="flow-item ops"><span class="num">BL-1</span>Pre-Auth</a>
+  <a href="batch-lifecycle/2-mobilize.html" class="flow-item ops"><span class="num">BL-2</span>Mobilize</a>
+  <a href="batch-lifecycle/3-kick-off.html" class="flow-item ops"><span class="num">BL-3</span>Kick-Off</a>
+  <a href="batch-lifecycle/4-delivery.html" class="flow-item ops"><span class="num">BL-4</span>Delivery</a>
+  <a href="batch-lifecycle/5-assessment.html" class="flow-item ops"><span class="num">BL-5</span>Assessment</a>
+  <a href="batch-lifecycle/6-certification.html" class="flow-item ops"><span class="num">BL-6</span>Certification</a>
+  <a href="batch-lifecycle/7-livelihood.html" class="flow-item ops"><span class="num">BL-7</span>Livelihood</a>
 </div>
 
-<!-- Execution Stages -->
-<h2>Execution Stages (Owned Here)</h2>
+<!-- Stage Cards -->
 <div class="stage-grid">
-  <a href="os/4-package.html" class="stage-card">
-    <div class="stage-num ops">Stage 4</div>
-    <h3>Package</h3>
-    <p>Marketing, pricing/funding, enrollment funnel. Mobilization through SHGs, district channels, or direct-to-consumer.</p>
-    <div class="core-q">"Do I have the right learners, the right funding, and the right calendar?"</div>
+  <a href="batch-lifecycle/1-pre-auth.html" class="stage-card">
+    <div class="stage-num ops">BL-1</div>
+    <h3>Pre-Authorization</h3>
+    <p>Prevent opening a batch you'll lose money on. Scheme eligibility, center readiness, trainer validity, district approval.</p>
+    <div class="core-q">"If I open this batch today, can I survive till Tranche-3?"</div>
   </a>
-  <a href="os/5-launch.html" class="stage-card">
-    <div class="stage-num ops">Stage 5</div>
-    <h3>Launch</h3>
-    <p>Batch setup, onboarding, baseline capture, portal activation. This is where Tranche-1 gets locked.</p>
+  <a href="batch-lifecycle/2-mobilize.html" class="stage-card">
+    <div class="stage-num ops">BL-2</div>
+    <h3>Mobilization & Enrollment</h3>
+    <p>Kill enrollment-time rejections. Learner eligibility, document verification, enterprise pre-existence validation.</p>
+    <div class="core-q">"Will these candidates pass portal + assessment + livelihood proof?"</div>
+  </a>
+  <a href="batch-lifecycle/3-kick-off.html" class="stage-card">
+    <div class="stage-num ops">BL-3</div>
+    <h3>Batch Kick-Off</h3>
+    <p>Lock Tranche-1 payment. Day-1 ceremony, biometric dry-run, trainer-learner mapping, batch activation on SID.</p>
     <div class="core-q">"Can an auditor reconstruct Day 1 exactly?"</div>
   </a>
-  <a href="os/6-deliver.html" class="stage-card">
-    <div class="stage-num ops">Stage 6</div>
-    <h3>Deliver</h3>
-    <p>Live training, attendance, QA checkpoints, mid-course correction. Delivery is compliance-critical, not pedagogical.</p>
+  <a href="batch-lifecycle/4-delivery.html" class="stage-card">
+    <div class="stage-num ops">BL-4</div>
+    <h3>Training Delivery</h3>
+    <p>Survive audits and avoid attendance disputes. Daily attendance SOP, trainer substitution, equipment verification.</p>
     <div class="core-q">"Can I defend every class conducted?"</div>
   </a>
-  <a href="os/7-certify.html" class="stage-card">
-    <div class="stage-num ops">Stage 7</div>
-    <h3>Certify / Close</h3>
-    <p>Assessment, certificates, archive, batch closure. Sloppy closure = delayed Tranche-2.</p>
+  <a href="batch-lifecycle/5-assessment.html" class="stage-card">
+    <div class="stage-num ops">BL-5</div>
+    <h3>Assessment Readiness</h3>
+    <p>Protect 70% of funding. Mock assessments, remedial action, assessment agency coordination.</p>
+    <div class="core-q">"Who is likely to fail, and why?"</div>
+  </a>
+  <a href="batch-lifecycle/6-certification.html" class="stage-card">
+    <div class="stage-num ops">BL-6</div>
+    <h3>Certification & Closure</h3>
+    <p>Close the loop cleanly. Certificate receipt, final reconciliation, batch closure on portal, document archival.</p>
     <div class="core-q">"Is anything left unuploaded or unverified?"</div>
   </a>
-  <a href="os/8-outcome-track.html" class="stage-card">
-    <div class="stage-num ops">Stage 8</div>
-    <h3>Outcome Track</h3>
-    <p>30/60/90 follow-up, livelihood evidence, alumni loop. This pack directly determines profitability.</p>
+  <a href="batch-lifecycle/7-livelihood.html" class="stage-card">
+    <div class="stage-num ops">BL-7</div>
+    <h3>Livelihood & Tranche-3</h3>
+    <p>Turn training into money. Udyam certificates, digital storefront evidence, income proxies, geo-tagged photos.</p>
     <div class="core-q">"Can I prove income?"</div>
   </a>
 </div>
 
-<!-- Key Sections -->
+<!-- Ownership Map -->
+<h2>Ownership</h2>
+<div class="md-content" style="font-size:0.92rem;">
+  <table>
+    <tr><th>Role</th><th>Primary Stages</th></tr>
+    <tr><td><strong>Program Manager</strong></td><td>BL-1, BL-2, BL-3</td></tr>
+    <tr><td><strong>Center Coordinator</strong></td><td>BL-2, BL-3, BL-4</td></tr>
+    <tr><td><strong>Trainer</strong></td><td>BL-4 (primary)</td></tr>
+    <tr><td><strong>Assessment Lead</strong></td><td>BL-5</td></tr>
+    <tr><td><strong>Documentation Officer</strong></td><td>BL-6, BL-7 (the compliance spine)</td></tr>
+  </table>
+  <blockquote>Trainers should <strong>never</strong> be sole custodians of compliance.</blockquote>
+</div>
+
+<!-- Operational Surfaces -->
 <h2>Operational Surfaces</h2>
 <div class="section-grid">
-  <a href="batch-lifecycle/index.html" class="section-link">
-    <h4>Batch Lifecycle</h4>
-    <p>7-stage operational backbone for every batch</p>
-  </a>
   <a href="templates/index.html" class="section-link">
     <h4>Templates</h4>
     <p>CCF sections D–I, batch runbook</p>
@@ -105,10 +124,6 @@
     <h4>Operational Adapters</h4>
     <p>Govt / CSR / Paid — operational checklists</p>
   </a>
-  <a href="roles.html" class="section-link">
-    <h4>Roles & Ownership</h4>
-    <p>Who owns what at each stage</p>
-  </a>
   <a href="records/index.html" class="section-link">
     <h4>Decision Records</h4>
     <p>Operational decisions — append-only</p>
@@ -116,7 +131,7 @@
 </div>
 
 <footer>
-  HET Skilling OS · Execution Map · <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs (strategy)</a>
+  HET Skilling OS · Batch Lifecycle · <a href="https://nsreehari-code.github.io/hetexecs/">hetexecs (strategy)</a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

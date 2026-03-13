@@ -6,19 +6,22 @@
     "pre-batch": [
       "TP registration active on SID",
       "Training Center geo-tagged and verified on SID",
-      "Trainer mapped to job role on SID with valid ToT",
+      "Trainer mapped to job role on SID",
       "Scheme eligibility confirmed (PMKVY / SSDM / DDU-GKY / NULM)",
-      "Batch created on SID (any error blocks payment)"
+      "Batch created on SID (any error blocks payment)",
+      "District Skill Committee contacted / comfort note obtained"
     ],
     "mobilize": [
       "All learner details uploaded and verified on SID",
-      "Center verified on portal"
+      "Portal enrollment completed for each candidate",
+      "Portal enrollment screenshot saved"
     ],
-    "kick-off": [],
+    "kick-off": [
+      "Batch activation confirmed on SID",
+      "SID batch activation screenshot saved"
+    ],
     "delivery": [
-      "Aadhaar biometric attendance captured daily",
-      "Backup biometric device available",
-      "Attendance fallback protocol documented",
+      "Aadhaar-linked biometric synced to SID daily",
       "SID attendance sync verified weekly",
       "Skill India branding visible in all class photos"
     ],
@@ -29,8 +32,9 @@
     ],
     "closure": [
       "Batch closed on SID portal",
+      "Portal closure screenshot saved",
       "Certificate issued via SSC",
-      "Final attendance reconciliation: portal vs register"
+      "SID portal attendance matches physical register"
     ],
     "livelihood": [
       "Tranche-3: livelihood evidence uploaded to portal",

@@ -90,7 +90,7 @@
   <div class="rb-empty">Select a course and start date to generate the runbook.</div>
 </div>
 
-<footer>hetops · Batch Runbook</footer>
+<footer>hetops · Batch Runbook <span id="dedup-status" style="font-size:0.75rem; color:var(--text-muted);"></span></footer>
 
 <script>
 // ===== STATE =====
@@ -178,38 +178,86 @@ function resolvePath(obj, path) {
   return path.split('.').reduce((o, k) => (o && o[k] !== undefined) ? o[k] : [], obj);
 }
 
-// ===== RENDER HELPERS =====
-function renderListItems(items) {
-  return items.map(i => '<li>' + i + '</li>').join('');
+// ===== DEDUP =====
+// Layer 1: Jaccard (always works, synchronous)
+const STOP = new Set(['a','an','the','is','are','was','were','be','been','and','or','of','on','in','to','for','with','by','at','from','if','all','any','per','has','have','had']);
+const JAC_THRESHOLD = 0.65;
+const COS_THRESHOLD = 0.82;
+
+function tokenize(s) {
+  return new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(/\s+/).filter(w => w.length > 1 && !STOP.has(w)));
 }
 
-function renderAdapterItems(stageId, funding) {
-  let html = '';
-  for (const f of funding) {
-    const adapter = adapters[f];
-    if (!adapter) continue;
-    const items = adapter.stages[stageId] || [];
-    for (const item of items) {
-      html += '<li class="adapter"><span class="rb-adapter-tag ' + f + '">' + adapter.label + '</span>' + item + '</li>';
+function jaccard(a, b) {
+  if (a.size === 0 && b.size === 0) return 1;
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+
+// Layer 2: Cosine via embeddings (async, best-effort)
+const embeddingCache = {};  // text -> Float32Array
+
+function cosine(a, b) {
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < a.length; i++) { dot += a[i]*b[i]; na += a[i]*a[i]; nb += b[i]*b[i]; }
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
+
+// Find index of similar item in seen list, or -1
+// seen = [{text, tokens, emb, tags[]}]
+function findSimilar(text, seen) {
+  const tokens = tokenize(text);
+  const emb = embeddingCache[text.toLowerCase().trim()] || null;
+  for (let i = 0; i < seen.length; i++) {
+    if (jaccard(tokens, seen[i].tokens) >= JAC_THRESHOLD) return i;
+    if (emb && seen[i].emb && cosine(emb, seen[i].emb) >= COS_THRESHOLD) return i;
+  }
+  return -1;
+}
+
+// Collect all items for a stage into seen[] with tag merging, then render
+// Each entry in seen: {text, tokens, emb, tags[], section}
+function collectItems(text, tags, section, seen) {
+  const idx = findSimilar(text, seen);
+  if (idx >= 0) {
+    for (const t of tags) {
+      if (!seen[idx].tags.includes(t)) seen[idx].tags.push(t);
     }
+    return;
+  }
+  seen.push({
+    text,
+    tokens: tokenize(text),
+    emb: embeddingCache[text.toLowerCase().trim()] || null,
+    tags: [...tags],
+    section
+  });
+}
+
+function renderCollected(seen, sectionKey) {
+  let html = '';
+  for (const entry of seen) {
+    if (entry.section !== sectionKey) continue;
+    html += renderItemHtml(entry.text, entry.tags);
   }
   return html;
 }
 
-function renderSection(title, items) {
-  if (!items || items.length === 0) return '';
-  return '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">' + renderListItems(items) + '</ul></div>';
+// ===== RENDER HELPERS =====
+function renderTagsHtml(tags) {
+  return tags.map(t => {
+    const adapter = adapters[t];
+    const label = adapter ? adapter.label : t.toUpperCase();
+    return '<span class="rb-adapter-tag ' + t + '">' + label + '</span>';
+  }).join('');
 }
 
-function renderCourseSpecific(spec, course) {
-  if (!spec || !spec.show) return '';
-  let items = [];
-  for (const field of spec.fields) {
-    const vals = resolvePath(course, field);
-    if (Array.isArray(vals)) items = items.concat(vals);
+function renderItemHtml(text, tags) {
+  if (tags.length > 0) {
+    return '<li class="adapter">' + renderTagsHtml(tags) + text + '</li>';
   }
-  if (items.length === 0) return '';
-  return renderSection(spec.title, items);
+  return '<li>' + text + '</li>';
 }
 
 // ===== MAIN RENDER =====
@@ -264,61 +312,110 @@ function renderRunbook() {
     html += '<span class="rb-owner">' + stage.owner + '</span></div>';
     html += '<div class="rb-q">' + stage.coreQuestion + '</div>';
 
-    // --- DELIVERY is special: has daily/weekly + per-week modules + QA ---
+    // Per-stage dedup: collect ALL items first, merge tags, then render
+    const seen = [];
+
+    // --- DELIVERY: daily/weekly sections + per-week modules + QA + adapters ---
     if (stage.spanType === 'delivery') {
-      // Sections from JSON
+      // Collect section items
       for (const [key, sec] of Object.entries(stage.sections)) {
-        html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">';
-        html += renderListItems(sec.items);
-        if (key === 'daily') html += renderAdapterItems(stage.id, funding);
-        html += '</ul></div>';
+        for (const item of sec.items) collectItems(item, [], key, seen);
       }
-      // Per-week modules from course
+      // Collect adapter items into 'daily' section
+      for (const f of funding) {
+        const adapter = adapters[f];
+        if (!adapter) continue;
+        for (const item of adapter.stages[stage.id] || []) collectItems(item, [f], 'daily', seen);
+      }
+      // Render sections
+      for (const [key, sec] of Object.entries(stage.sections)) {
+        const rendered = renderCollected(seen, key);
+        if (rendered) html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">' + rendered + '</ul></div>';
+      }
+      // Per-week modules from course (these don't dedup against checklist items)
       for (let w = 0; w < course.modules.length; w++) {
         const mod = course.modules[w];
         html += '<div class="rb-section"><h3><span class="rb-week-title">Week ' + mod.week + ':</span> ' + mod.title;
         html += ' <span class="rb-dates">(' + weekRange(startDate, w) + ')</span></h3>';
         html += '<ul class="rb-items">';
         for (const a of mod.artifacts) html += '<li>Artifact: ' + a + '</li>';
-        // QA checkpoints from JSON
         if (stage.qaCheckpoints) {
           for (const qa of stage.qaCheckpoints) {
             if (qa.week === mod.week) {
               html += '<li style="font-weight:600; color:var(--stage-ops);">⚑ QA Checkpoint</li>';
-              html += renderListItems(qa.items);
+              for (const qi of qa.items) {
+                collectItems(qi, [], 'qa-w' + mod.week, seen);
+              }
+              html += renderCollected(seen, 'qa-w' + mod.week);
             }
           }
         }
         html += '</ul></div>';
       }
 
-    // --- LIVELIHOOD is special: has day30/60/90 with computed dates ---
+    // --- LIVELIHOOD: day30/60/90 with computed dates + adapters ---
     } else if (stage.spanType === 'post-batch') {
       const dayLabels = { day30: 30, day60: 60, day90: 90 };
+      // Collect all section items
+      for (const [key, sec] of Object.entries(stage.sections)) {
+        for (const item of sec.items) collectItems(item, [], key, seen);
+      }
+      // Collect adapter items into 'day90' section
+      for (const f of funding) {
+        const adapter = adapters[f];
+        if (!adapter) continue;
+        for (const item of adapter.stages[stage.id] || []) collectItems(item, [f], 'day90', seen);
+      }
+      // Collect course-specific into 'courseSpecific'
+      if (stage.courseSpecific && stage.courseSpecific.show) {
+        for (const field of stage.courseSpecific.fields) {
+          const vals = resolvePath(course, field);
+          if (Array.isArray(vals)) for (const v of vals) collectItems(v, [], 'courseSpecific', seen);
+        }
+      }
+      // Render
       for (const [key, sec] of Object.entries(stage.sections)) {
         let title = sec.title;
         if (dayLabels[key]) title += ' (' + fmt(addDays(endDate, dayLabels[key])) + ')';
-        html += '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">';
-        html += renderListItems(sec.items);
-        if (key === 'day90') html += renderAdapterItems(stage.id, funding);
-        html += '</ul></div>';
+        const rendered = renderCollected(seen, key);
+        if (rendered) html += '<div class="rb-section"><h3>' + title + '</h3><ul class="rb-items">' + rendered + '</ul></div>';
       }
-      html += renderCourseSpecific(stage.courseSpecific, course);
+      if (stage.courseSpecific && stage.courseSpecific.show) {
+        const csRendered = renderCollected(seen, 'courseSpecific');
+        if (csRendered) html += '<div class="rb-section"><h3>' + stage.courseSpecific.title + '</h3><ul class="rb-items">' + csRendered + '</ul></div>';
+      }
 
-    // --- STANDARD STAGES: render sections + adapters + course-specific ---
+    // --- STANDARD STAGES: sections + adapters + course-specific ---
     } else {
       const sectionKeys = Object.keys(stage.sections);
+      // Collect core items
+      for (const key of sectionKeys) {
+        for (const item of stage.sections[key].items) collectItems(item, [], key, seen);
+      }
+      // Collect adapter items into 'execution' section
+      const adapterSection = sectionKeys.includes('execution') ? 'execution' : sectionKeys[Math.min(1, sectionKeys.length - 1)];
+      for (const f of funding) {
+        const adapter = adapters[f];
+        if (!adapter) continue;
+        for (const item of adapter.stages[stage.id] || []) collectItems(item, [f], adapterSection, seen);
+      }
+      // Collect course-specific
+      if (stage.courseSpecific && stage.courseSpecific.show) {
+        for (const field of stage.courseSpecific.fields) {
+          const vals = resolvePath(course, field);
+          if (Array.isArray(vals)) for (const v of vals) collectItems(v, [], 'courseSpecific', seen);
+        }
+      }
+      // Render
       for (const key of sectionKeys) {
         const sec = stage.sections[key];
-        html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">';
-        html += renderListItems(sec.items);
-        // Add adapter items after the main execution section (second section, or only non-evidence section)
-        if (key === 'execution' || (key === sectionKeys[Math.min(1, sectionKeys.length - 1)] && key !== 'evidence')) {
-          html += renderAdapterItems(stage.id, funding);
-        }
-        html += '</ul></div>';
+        const rendered = renderCollected(seen, key);
+        if (rendered) html += '<div class="rb-section"><h3>' + sec.title + '</h3><ul class="rb-items">' + rendered + '</ul></div>';
       }
-      html += renderCourseSpecific(stage.courseSpecific, course);
+      if (stage.courseSpecific && stage.courseSpecific.show) {
+        const csRendered = renderCollected(seen, 'courseSpecific');
+        if (csRendered) html += '<div class="rb-section"><h3>' + stage.courseSpecific.title + '</h3><ul class="rb-items">' + csRendered + '</ul></div>';
+      }
     }
 
     html += '</div>'; // close rb-phase
@@ -342,7 +439,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById(id).addEventListener('change', renderRunbook);
     document.getElementById(id).addEventListener('input', renderRunbook);
   }
+
+  // Layer 2: try loading Transformers.js in background (best-effort, never blocks)
+  tryLoadEmbeddings();
 });
+
+// ===== BACKGROUND EMBEDDING LOADER =====
+async function tryLoadEmbeddings() {
+  const status = document.getElementById('dedup-status');
+  try {
+    status.textContent = '(loading dedup model\u2026)';
+    const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+    const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized: true });
+    status.textContent = '(computing embeddings\u2026)';
+
+    // Collect all unique item texts from stages + adapters
+    const allTexts = new Set();
+    for (const s of stages) {
+      for (const sec of Object.values(s.sections || {})) {
+        for (const item of sec.items || []) allTexts.add(item.toLowerCase().trim());
+      }
+      for (const qa of s.qaCheckpoints || []) {
+        for (const item of qa.items || []) allTexts.add(item.toLowerCase().trim());
+      }
+    }
+    for (const a of Object.values(adapters)) {
+      for (const items of Object.values(a.stages || {})) {
+        for (const item of items) allTexts.add(item.toLowerCase().trim());
+      }
+    }
+
+    // Compute embeddings in small batches to not freeze UI
+    const texts = [...allTexts];
+    const BATCH = 8;
+    for (let i = 0; i < texts.length; i += BATCH) {
+      const batch = texts.slice(i, i + BATCH);
+      const output = await embedder(batch, { pooling: 'mean', normalize: true });
+      for (let j = 0; j < batch.length; j++) {
+        embeddingCache[batch[j]] = output[j].data;
+      }
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    status.textContent = '(semantic dedup active)';
+    renderRunbook();
+  } catch (e) {
+    console.log('Semantic dedup unavailable, using token overlap:', e.message);
+    status.textContent = '';
+  }
+}
 </script>
 
 </body>

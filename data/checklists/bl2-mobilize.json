@@ -3,13 +3,13 @@
   "blStage": "BL-2",
   "title": "Mobilization & Enrollment",
   "owner": "Program Manager + Center Coordinator",
-  "coreQuestion": "Will these candidates pass portal + assessment + livelihood proof?",
+  "coreQuestion": "Will these candidates pass assessment + livelihood proof?",
   "weekOffset": -1,
   "sections": {
     "decision": {
       "title": "Decision",
       "items": [
-        "Each candidate meets scheme eligibility criteria",
+        "Each candidate meets eligibility criteria",
         "Pre-existing enterprise validated (for entrepreneur courses)",
         "Each candidate can realistically pass assessment"
       ]
@@ -23,8 +23,7 @@
         "Aadhaar–mobile–bank linkage confirmed",
         "Age eligibility verified",
         "Consent & declaration forms signed",
-        "Enterprise pre-existence validated (photos, product samples)",
-        "Portal enrollment completed (if govt)"
+        "Enterprise pre-existence evidence collected (photos, product samples)"
       ]
     },
     "evidence": {
@@ -33,8 +32,7 @@
         "Aadhaar copy filed",
         "Bank passbook / cancelled cheque copy filed",
         "Consent forms filed",
-        "Enterprise pre-existence photos archived",
-        "Portal enrollment screenshot saved"
+        "Enterprise pre-existence photos archived"
       ]
     }
   },
